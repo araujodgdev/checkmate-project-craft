@@ -23,88 +23,28 @@ export function useAnthropic() {
       try {
         console.log("Detalhes do projeto enviados:", projectDetails);
         
-        // Obter a chave da API
-        const apiKey = "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"
-        
-        // Montar o prompt para a API da Anthropic
-        const prompt = `
-Você é um especialista em desenvolvimento de software.
-Gere uma checklist detalhada (10 a 14 itens) para organização e entrega de um projeto com as seguintes caraterísticas:
+        // Chamar a Edge Function do Supabase em vez da API da Anthropic diretamente
+        const { data, error: funcError } = await supabase.functions.invoke(
+          'generate-checklist-anthropic',
+          {
+            body: {
+              projectDetails
+            }
+          }
+        );
 
-- Nome do projeto: ${projectDetails.name}
-- Descrição: ${projectDetails.description}
-- Tipo do projeto: ${projectDetails.type}
-- Tecnologias principais: ${projectDetails.technologies.join(", ")}
-- Objetivos: ${projectDetails.objectives}
-
-A checklist deve ser prática e cobrir planejamento, autenticação, lógica, integrações, qualidade de código e entrega do produto.
-Formato da resposta estritamente:
-CHECKLIST:
-1. [Passo mais importante 1]
-2. [Passo importante 2]
-...
-(Obs: não inclua textos extras, apenas a lista numerada e clara).`;
-
-        // Chamada direta para a API da Anthropic
-        console.log("Enviando requisição para API da Anthropic...");
-        const response = await fetch("https://api.anthropic.com/v1/messages", {
-          method: "POST",
-          headers: {
-            "x-api-key": apiKey,
-            "anthropic-version": "2023-06-01",
-            "content-type": "application/json",
-          },
-          body: JSON.stringify({
-            model: "claude-3-5-haiku-20241022",
-            max_tokens: 1024,
-            temperature: 0.2,
-            messages: [
-              { role: "user", content: prompt }
-            ]
-          }),
-        });
-
-        // Log do status da resposta
-        console.log("Status da resposta da API:", response.status);
-        
-        // Verificar se a resposta foi bem-sucedida
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error("Erro da API da Anthropic:", errorText);
-          throw new Error(`Erro na API da Anthropic (${response.status}): ${errorText}`);
+        if (funcError) {
+          console.error("Erro na chamada da Edge Function:", funcError);
+          throw new Error(`Erro ao chamar a função: ${funcError.message}`);
         }
 
-        // Processar a resposta
-        const data = await response.json();
-        console.log("Resposta da API (primeiros 100 caracteres):", 
-          JSON.stringify(data).slice(0, 100) + "...");
+        console.log("Resposta da Edge Function:", data);
         
-        // Extrair o texto da resposta
-        let checklist = "";
-        if (data?.content && Array.isArray(data.content)) {
-          checklist = data.content.map((c: any) => c.text).join("").trim();
-        } else {
-          checklist = data?.content?.text || "";
+        if (!data?.items || !Array.isArray(data.items)) {
+          throw new Error("Formato de resposta inválido da função");
         }
         
-        console.log("Checklist extraída (primeiros 100 caracteres):", 
-          checklist.slice(0, 100) + "...");
-
-        // Processar a checklist em itens
-        let items = checklist
-          .split("\n")
-          .map((l: string) => l.replace(/^\d+(\.|\))/,"").trim())
-          .filter((l: string) => l.length > 0 && !l.toLowerCase().startsWith("checklist:"));
-
-        // Caso checklist esteja toda em uma linha, dividir no ponto
-        if (items.length < 4) {
-          console.log("Checklist com menos de 4 itens, tentando parsing alternativo");
-          items = checklist.split(/[0-9]+\./).map((t: string) => t.trim()).filter(Boolean);
-        }
-        
-        console.log("Número final de itens processados:", items.length);
-        
-        return items;
+        return data.items;
       } catch (err: any) {
         console.error("Erro completo:", err);
         setError(err?.message || "Falha ao gerar checklist");
