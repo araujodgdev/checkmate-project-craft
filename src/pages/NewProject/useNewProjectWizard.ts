@@ -33,7 +33,7 @@ export function useNewProjectWizard(totalSteps = 3) {
   const [description, setDescription] = useState("");
   const [objectives, setObjectives] = useState("");
   const { createProject } = useProjects();
-  const { generateChecklist, isLoading: isGeneratingChecklist } = useAnthropic();
+  const { generateChecklist } = useAnthropic();
 
   const handleTechnologyClick = (tech: string) => {
     setSelectedTechnologies(selectedTechnologies =>
@@ -90,8 +90,7 @@ export function useNewProjectWizard(totalSteps = 3) {
             deadline: deadlineStr,
           };
 
-          // Corrigido: chamamos generateChecklist como uma função normal
-          generatedChecklist = await generateChecklist(projectDetails);
+          generatedChecklist = await generateChecklist.mutateAsync(projectDetails);
         } catch (err: any) {
           toast.error("Erro ao gerar checklist automática", { 
             description: err?.message || "Tente novamente." 
