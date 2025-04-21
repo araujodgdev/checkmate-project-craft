@@ -113,8 +113,13 @@
   * {
     @apply border-border;
   }
-
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Ajuste: gradiente mais suave para dark, landing */
+body.dark,
+html.dark {
+  background: linear-gradient(135deg, #1A1F2C 0%, #22263B 60%, #28355a 100%) !important;
 }
