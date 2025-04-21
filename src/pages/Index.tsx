@@ -1,14 +1,13 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { Navigate } from "react-router-dom";
+import { useAuthStore } from "@/lib/store";
 
+// Redirect to Dashboard or Auth page based on authentication status
 const Index = () => {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
-    </div>
-  );
+  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+  
+  // In a real app with Supabase, we would check the actual authentication status
+  // For now, we'll always redirect to the dashboard since we're not implementing full auth yet
+  return <Navigate to="/" replace />;
 };
 
 export default Index;
