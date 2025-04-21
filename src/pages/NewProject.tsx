@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { MainLayout } from "@/components/layouts/main-layout";
 import { Button } from "@/components/ui/button";
@@ -22,8 +21,9 @@ import { format } from "date-fns";
 import { CalendarIcon, ArrowLeft, ArrowRight, Loader2, CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
+import { useProjects } from "@/hooks/useProjects";
+import { toast } from "sonner";
 
-// Mock data
 const projectTypes = [
   { value: "web", label: "Web Application" },
   { value: "mobile", label: "Mobile Application" },
@@ -46,7 +46,8 @@ export default function NewProject() {
   const [loading, setLoading] = useState(false);
   const [selectedTechnologies, setSelectedTechnologies] = useState<string[]>([]);
   const [deadline, setDeadline] = useState<Date | undefined>(undefined);
-  
+  const { createProject } = useProjects();
+
   const totalSteps = 3;
 
   const handleTechnologyClick = (tech: string) => {
@@ -57,17 +58,50 @@ export default function NewProject() {
     }
   };
   
-  const handleNext = () => {
+  const handleNext = async () => {
     if (step < totalSteps) {
       setStep(step + 1);
       window.scrollTo(0, 0);
     } else {
-      // Submit form
       setLoading(true);
-      setTimeout(() => {
+      try {
+        const projectName = (
+          document.getElementById("project-name") as HTMLInputElement
+        )?.value;
+        const description = (
+          document.getElementById("project-description") as HTMLTextAreaElement
+        )?.value;
+        const type = (
+          document.querySelector("[data-state=checked]") as HTMLElement
+        )?.innerText ?? "web";
+        const deadlineStr = deadline
+          ? deadline.toISOString().split("T")[0]
+          : undefined;
+
+        if (!projectName || !type || selectedTechnologies.length === 0) {
+          toast.error("Preencha os campos obrigatórios.");
+          setLoading(false);
+          return;
+        }
+
+        await createProject.mutateAsync({
+          name: projectName,
+          description,
+          type,
+          technologies: selectedTechnologies,
+          deadline: deadlineStr,
+        });
+
+        toast.success("Projeto criado com sucesso! Gerando checklist...");
+
         setLoading(false);
-        navigate("/projects/new-project-id");
-      }, 2000);
+        navigate("/dashboard");
+      } catch (err: any) {
+        setLoading(false);
+        toast.error("Erro ao criar projeto", {
+          description: err?.message || "Tente novamente.",
+        });
+      }
     }
   };
   
