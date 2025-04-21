@@ -11,22 +11,6 @@ import { useProjects } from "@/hooks/useProjects";
 import { ProjectBasicInfoForm } from "./NewProject/ProjectBasicInfoForm";
 import { ProjectTechnicalForm } from "./NewProject/ProjectTechnicalForm";
 import { ProjectObjectivesForm } from "./NewProject/ProjectObjectivesForm";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import { Badge } from "@/components/ui/badge";
 
 const projectTypes = [
   { value: "web", label: "Web Application" },
@@ -78,7 +62,7 @@ export default function NewProject() {
         },
       });
       
-      console.log("Resposta bruta da função:", data, error);
+      console.log("Resposta da função:", data, error);
       
       if (error || !data?.checklist) {
         console.error("Erro completo da função:", error);

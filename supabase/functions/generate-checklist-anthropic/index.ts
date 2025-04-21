@@ -15,21 +15,35 @@ serve(async (req) => {
   }
 
   try {
-    // Lê o corpo e faz o parsing seguro
+    // Improved error handling for JSON parsing
     let jsonBody;
     try {
       const rawBody = await req.text();
+      console.log("Raw request body:", rawBody);
+      
+      if (!rawBody || rawBody.trim() === '') {
+        return new Response(JSON.stringify({ 
+          error: "Empty request body received" 
+        }), {
+          status: 400,
+          headers,
+        });
+      }
+      
       jsonBody = JSON.parse(rawBody);
     } catch (parseError) {
+      console.error("JSON parse error:", parseError);
       return new Response(JSON.stringify({ 
         error: "Invalid JSON input", 
-        details: parseError.message
+        details: parseError.message 
       }), {
         status: 400,
         headers,
       });
     }
 
+    console.log("Parsed request body:", JSON.stringify(jsonBody));
+    
     const { project } = jsonBody || {};
 
     if (!project?.name || !project?.type || !project?.technologies) {
@@ -80,6 +94,8 @@ CHECKLIST:
       ]
     };
 
+    console.log("Sending request to Anthropic API");
+    
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
@@ -91,6 +107,7 @@ CHECKLIST:
     });
 
     const responseText = await response.text();
+    console.log("Anthropic API response:", responseText.slice(0, 200) + "...");
 
     if (!response.ok) {
       let errorDetail = "Unknown error";
@@ -126,7 +143,7 @@ CHECKLIST:
     // Captura checklist relevante
     let checklist = "";
     if (ai?.content && Array.isArray(ai.content)) {
-      checklist = ai.content.map((c: any) => c.text).join("").trim();
+      checklist = ai.content.map((c) => c.text).join("").trim();
     } else {
       checklist = ai?.content?.text || "";
     }
@@ -134,18 +151,19 @@ CHECKLIST:
     // Extrai as linhas checklist tipo array
     let items = checklist
       .split("\n")
-      .map((l: string) => l.replace(/^\d+(\.|\))/,"").trim())
-      .filter((l: string) => l.length > 0 && !l.toLowerCase().startsWith("checklist:"));
+      .map((l) => l.replace(/^\d+(\.|\))/,"").trim())
+      .filter((l) => l.length > 0 && !l.toLowerCase().startsWith("checklist:"));
 
     // Alternativa se a checklist estiver densa
     if (items.length < 4) {
-      items = checklist.split(/[0-9]+\./).map((t: string) => t.trim()).filter(Boolean);
+      items = checklist.split(/[0-9]+\./).map((t) => t.trim()).filter(Boolean);
     }
 
     return new Response(JSON.stringify({ checklist: items }), {
       headers,
     });
   } catch (error) {
+    console.error("Unexpected error:", error);
     return new Response(JSON.stringify({ 
       error: error?.message || "Erro inesperado",
       stack: error?.stack
