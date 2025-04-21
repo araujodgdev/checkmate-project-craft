@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { MainLayout } from "@/components/layouts/main-layout";
 import { Button } from "@/components/ui/button";
@@ -55,23 +54,19 @@ export default function NewProject() {
     try {
       console.log("Enviando detalhes do projeto para a função:", JSON.stringify(projectDetails, null, 2));
       
-      // Correção no corpo da requisição e configuração adequada
       const { data, error } = await supabase.functions.invoke("generate-checklist-anthropic", {
         method: "POST",
         body: { project: projectDetails },
-        headers: {
-          "Content-Type": "application/json",
-        },
       });
       
       console.log("Resposta da função:", data, error);
       
-      if (error) {
+      if (error || !data?.checklist) {
         console.error("Erro completo da função:", error);
         throw new Error(error?.message ?? "Erro ao gerar checklist com IA");
       }
       
-      if (!data?.checklist || !Array.isArray(data.checklist)) {
+      if (!Array.isArray(data.checklist)) {
         console.error("Formato de resposta inválido:", data);
         throw new Error("Formato de resposta inválido da IA");
       }
