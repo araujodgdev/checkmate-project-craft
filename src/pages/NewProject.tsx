@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { MainLayout } from "@/components/layouts/main-layout";
 import { Button } from "@/components/ui/button";
@@ -25,6 +24,9 @@ import { Badge } from "@/components/ui/badge";
 import { useProjects } from "@/hooks/useProjects";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { ProjectBasicInfoForm } from "./NewProject/ProjectBasicInfoForm";
+import { ProjectTechnicalForm } from "./NewProject/ProjectTechnicalForm";
+import { ProjectObjectivesForm } from "./NewProject/ProjectObjectivesForm";
 
 const projectTypes = [
   { value: "web", label: "Web Application" },
@@ -66,7 +68,6 @@ export default function NewProject() {
 
   async function generateChecklistFromAnthropic(projectDetails: Record<string, any>) {
     try {
-      // Calling your edge function, no change here
       const { data, error } = await supabase.functions.invoke("generate-checklist-anthropic", {
         body: { project: projectDetails },
       });
@@ -135,7 +136,6 @@ export default function NewProject() {
 
         if (createdProject?.id && generatedChecklist.length > 0) {
           try {
-            // Correct insert on checklists table using correct typing
             const { data: insertedChecklist, error: checklistError } = await supabase
               .from("checklists")
               .insert({
@@ -220,174 +220,33 @@ export default function NewProject() {
         
         <Card className="shadow-sm animate-scale-in">
           <CardContent className="pt-6">
-            {/* Step 1: Basic Information */}
             {step === 1 && (
-              <div className="space-y-6">
-                <div>
-                  <h2 className="text-xl font-semibold mb-4">Basic Information</h2>
-                  <Separator className="mb-6" />
-                </div>
-                
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="project-name">Project Name <span className="text-destructive">*</span></Label>
-                    <Input 
-                      id="project-name" 
-                      placeholder="Enter project name"
-                      value={projectName}
-                      onChange={(e) => setProjectName(e.target.value)}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="project-type">Project Type <span className="text-destructive">*</span></Label>
-                    <Select value={projectType} onValueChange={setProjectType}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select project type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {projectTypes.map((type) => (
-                          <SelectItem key={type.value} value={type.value}>
-                            {type.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="project-description">Description</Label>
-                    <Textarea 
-                      id="project-description" 
-                      placeholder="Brief description of your project (optional)"
-                      rows={4}
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                    />
-                  </div>
-                </div>
-              </div>
+              <ProjectBasicInfoForm
+                projectTypes={projectTypes}
+                projectName={projectName}
+                setProjectName={setProjectName}
+                projectType={projectType}
+                setProjectType={setProjectType}
+                description={description}
+                setDescription={setDescription}
+              />
             )}
-            
-            {/* Step 2: Technical Details */}
+
             {step === 2 && (
-              <div className="space-y-6">
-                <div>
-                  <h2 className="text-xl font-semibold mb-4">Technical Details</h2>
-                  <Separator className="mb-6" />
-                </div>
-                
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <Label>Technologies <span className="text-destructive">*</span></Label>
-                      <span className="text-sm text-muted-foreground">
-                        Selected: {selectedTechnologies.length}
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {technologies.map((tech) => (
-                        <Badge
-                          key={tech}
-                          variant={selectedTechnologies.includes(tech) ? "default" : "outline"}
-                          className={cn(
-                            "cursor-pointer transition-all",
-                            selectedTechnologies.includes(tech) 
-                              ? "bg-primary" 
-                              : "hover:bg-primary/10"
-                          )}
-                          onClick={() => handleTechnologyClick(tech)}
-                        >
-                          {tech}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="complexity">Project Complexity</Label>
-                    <div className="pt-4 pb-2">
-                      <Slider 
-                        defaultValue={[3]} 
-                        max={5} 
-                        step={1}
-                        className="mb-2"
-                      />
-                      <div className="flex justify-between text-sm text-muted-foreground">
-                        <span>Simple</span>
-                        <span>Moderate</span>
-                        <span>Complex</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="team-size">Team Size</Label>
-                    <Select defaultValue="2">
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select team size" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="1">Solo (1 developer)</SelectItem>
-                        <SelectItem value="2">Small (2-5 developers)</SelectItem>
-                        <SelectItem value="3">Medium (6-10 developers)</SelectItem>
-                        <SelectItem value="4">Large (11+ developers)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </div>
+              <ProjectTechnicalForm
+                technologies={technologies}
+                selectedTechnologies={selectedTechnologies}
+                handleTechnologyClick={handleTechnologyClick}
+              />
             )}
-            
-            {/* Step 3: Objectives & Timeline */}
+
             {step === 3 && (
-              <div className="space-y-6">
-                <div>
-                  <h2 className="text-xl font-semibold mb-4">Objectives & Timeline</h2>
-                  <Separator className="mb-6" />
-                </div>
-                
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="objectives">Project Objectives</Label>
-                    <Textarea 
-                      id="objectives" 
-                      placeholder="What are the main goals of this project?"
-                      rows={4}
-                      value={objectives}
-                      onChange={(e) => setObjectives(e.target.value)}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label>Project Deadline</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !deadline && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {deadline ? format(deadline, "PPP") : "Select a date"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0 pointer-events-auto">
-                        <Calendar
-                          mode="single"
-                          selected={deadline}
-                          onSelect={setDeadline}
-                          initialFocus
-                          className="pointer-events-auto"
-                          disabled={(date) => date < new Date()}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                </div>
-              </div>
+              <ProjectObjectivesForm
+                objectives={objectives}
+                setObjectives={setObjectives}
+                deadline={deadline}
+                setDeadline={setDeadline}
+              />
             )}
           </CardContent>
         </Card>
