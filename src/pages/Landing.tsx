@@ -2,10 +2,15 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 flex flex-col relative">
+      {/* Theme toggle canto superior direito */}
+      <div className="absolute top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
       <header className="w-full flex justify-between items-center px-8 py-6">
         <div className="flex items-center gap-2">
           <CheckCircle className="text-blue-600" size={32} />
