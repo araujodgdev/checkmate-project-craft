@@ -79,6 +79,7 @@ export type Database = {
           deadline: string | null
           description: string | null
           id: string
+          is_public: boolean
           name: string
           progress: number
           technologies: string[] | null
@@ -90,6 +91,7 @@ export type Database = {
           deadline?: string | null
           description?: string | null
           id?: string
+          is_public?: boolean
           name: string
           progress?: number
           technologies?: string[] | null
@@ -101,6 +103,7 @@ export type Database = {
           deadline?: string | null
           description?: string | null
           id?: string
+          is_public?: boolean
           name?: string
           progress?: number
           technologies?: string[] | null

@@ -17,6 +17,9 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Share, Link as LinkIcon, Copy } from "lucide-react";
+import { useShareProject } from "@/hooks/useShareProject";
+import { useToast } from "@/hooks/use-toast"; // ajuste para o contexto correto
 export default function ProjectDetails() {
   const {
     projectId
@@ -46,6 +49,7 @@ export default function ProjectDetails() {
     toggleItemStatus,
     deleteItem
   } = useChecklistItems();
+  const { makePublic, publicUrl } = useShareProject(projectId);
   useEffect(() => {
     // Abrir as duas primeiras categorias por padrão quando carregadas
     if (checklists && checklists.length > 0 && openCategories.length === 0) {
@@ -119,6 +123,23 @@ export default function ProjectDetails() {
     }
   };
 
+  // Nova função para acionar o compartilhamento do projeto
+  const handleShareProject = async () => {
+    try {
+      // Só torna público se ainda não for público
+      if (!project?.is_public) {
+        await makePublic.mutateAsync();
+        toast.success("Projeto tornado público! Link pronto para compartilhar.");
+      }
+      // Copia o link para a área de transferência
+      await navigator.clipboard.writeText(publicUrl);
+      toast.success("Link copiado para a área de transferência!");
+    } catch (error) {
+      console.error("Erro ao compartilhar projeto:", error);
+      toast.error("Erro ao compartilhar projeto");
+    }
+  };
+
   // Exibe mensagem de carregamento
   if (isLoading) {
     return <MainLayout>
@@ -185,14 +206,41 @@ export default function ProjectDetails() {
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2 mt-4 lg:mt-0">
+              
+              {/* Substitui botão de exportar pelo de compartilhar */}
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={handleShareProject}
+                disabled={makePublic.isPending} // desativa enquanto processando
+                title="Compartilhar projeto"
+              >
+                <Share size={16} />
+                <span className="hidden md:inline">
+                  {project?.is_public ? "Compartilhar" : "Tornar público & copiar link"}
+                </span>
+              </Button>
+
+              {/* Mostra o link para cópia manual se já for público */}
+              {project?.is_public && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(publicUrl);
+                    toast.success("Link copiado!");
+                  }}
+                  title="Copiar link público"
+                >
+                  <LinkIcon size={16} />
+                </Button>
+              )}
+
+              {/* ... mantém botões de editar e excluir projeto */}
               <Button variant="outline" size="sm" className="gap-2">
                 <PenSquare size={16} />
                 <span className="hidden md:inline">Editar Projeto</span>
-              </Button>
-              
-              <Button variant="outline" size="sm" className="gap-2">
-                <Download size={16} />
-                <span className="hidden md:inline">Exportar</span>
               </Button>
               
               <AlertDialog>
