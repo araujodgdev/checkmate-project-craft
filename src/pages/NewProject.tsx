@@ -122,7 +122,6 @@ export default function NewProject() {
             className="mr-4 p-0 h-auto"
           >
             <ArrowLeft className="h-5 w-5 mr-2" />
-            Back
           </Button>
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Create New Project</h1>

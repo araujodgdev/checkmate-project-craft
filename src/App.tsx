@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -18,61 +17,64 @@ import NewProject from "@/pages/NewProject";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 60 * 1000, // 1 minute
-      refetchOnWindowFocus: false,
-    },
-  },
+	defaultOptions: {
+		queries: {
+			staleTime: 60 * 1000, // 1 minute
+			refetchOnWindowFocus: false,
+		},
+	},
 });
 
 const App = () => {
-  useEffect(() => {
-    useAuthStore.getState().initializeAuth();
-  }, []);
+	useEffect(() => {
+		useAuthStore.getState().initializeAuth();
+	}, []);
 
-  return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="light">
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Landing />} />
-              <Route 
-                path="/dashboard" 
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route path="/auth" element={<AuthPage />} />
-              <Route path="/projects" element={<Navigate to="/dashboard" replace />} />
-              <Route 
-                path="/projects/:projectId" 
-                element={
-                  <ProtectedRoute>
-                    <ProjectDetails />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/new-project" 
-                element={
-                  <ProtectedRoute>
-                    <NewProject />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
-  );
+	return (
+		<QueryClientProvider client={queryClient}>
+			<ThemeProvider defaultTheme="dark">
+				<TooltipProvider>
+					<Toaster />
+					<Sonner />
+					<BrowserRouter>
+						<Routes>
+							<Route path="/" element={<Landing />} />
+							<Route
+								path="/dashboard"
+								element={
+									<ProtectedRoute>
+										<Dashboard />
+									</ProtectedRoute>
+								}
+							/>
+							<Route path="/auth" element={<AuthPage />} />
+							<Route
+								path="/projects"
+								element={<Navigate to="/projects" replace />}
+							/>
+							<Route
+								path="/projects/:projectId"
+								element={
+									<ProtectedRoute>
+										<ProjectDetails />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path="/new-project"
+								element={
+									<ProtectedRoute>
+										<NewProject />
+									</ProtectedRoute>
+								}
+							/>
+							<Route path="*" element={<NotFound />} />
+						</Routes>
+					</BrowserRouter>
+				</TooltipProvider>
+			</ThemeProvider>
+		</QueryClientProvider>
+	);
 };
 
 export default App;
