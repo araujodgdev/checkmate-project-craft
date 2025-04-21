@@ -1,10 +1,11 @@
 
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CheckCircle, ChevronLeft, ChevronRight, GripVertical, Home, List, LogOut, Settings, User } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useAuthStore } from "@/lib/store";
 
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
@@ -16,6 +17,8 @@ export function Sidebar() {
   const collapsedWidth = 64;
 
   const location = useLocation();
+  const navigate = useNavigate();
+  const logout = useAuthStore((state) => state.logout);
 
   const navItems = [
     { label: "Dashboard", icon: Home, href: "/dashboard" },
@@ -23,9 +26,9 @@ export function Sidebar() {
     { label: "Settings", icon: Settings, href: "/settings" },
   ];
 
-  const handleLogout = () => {
-    // Implement logout functionality here
-    console.log("Logging out...");
+  const handleLogout = async () => {
+    await logout();
+    navigate("/auth", { replace: true });
   };
 
   const resize = useCallback((e: MouseEvent) => {
@@ -292,3 +295,4 @@ export function Sidebar() {
 }
 
 // Atenção: este arquivo está ficando muito longo! Considere pedir refatoração em arquivos menores após os ajustes.
+
