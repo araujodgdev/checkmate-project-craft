@@ -51,8 +51,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-
 import { ProjectFilesManager } from "@/components/project/ProjectFilesManager";
+import { ProjectEditDialog } from "@/components/project/ProjectEditDialog";
 
 export default function ProjectDetails() {
   const { projectId } = useParams<{projectId: string}>();
@@ -64,6 +64,8 @@ export default function ProjectDetails() {
   const [addingChecklistItem, setAddingChecklistItem] = useState<string | null>(null);
   const [isAddingChecklist, setIsAddingChecklist] = useState(false);
   const [isDeletingProject, setIsDeletingProject] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isEditLoading, setIsEditLoading] = useState(false);
 
   const {
     project,
@@ -83,7 +85,6 @@ export default function ProjectDetails() {
   } = useChecklistItems();
 
   useEffect(() => {
-    // Abrir as duas primeiras categorias por padrão quando carregadas
     if (checklists && checklists.length > 0 && openCategories.length === 0) {
       const initialOpenCategories = checklists
         .slice(0, 2)
@@ -162,7 +163,29 @@ export default function ProjectDetails() {
     }
   };
 
-  // Exibe mensagem de carregamento
+  const handleEditProject = async (values: {
+    name: string;
+    description: string;
+    type: string;
+    technologies: string[];
+    deadline: string | null;
+  }) => {
+    if (!projectId || !project) return;
+    try {
+      setIsEditLoading(true);
+      await updateProject.mutateAsync({
+        id: projectId,
+        ...values,
+      });
+      toast.success("Projeto atualizado com sucesso!");
+    } catch (error) {
+      console.error("Erro ao atualizar projeto:", error);
+      toast.error("Erro ao atualizar projeto");
+    } finally {
+      setIsEditLoading(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <MainLayout>
@@ -176,7 +199,6 @@ export default function ProjectDetails() {
     );
   }
 
-  // Exibe mensagem de erro
   if (error || !project) {
     return (
       <MainLayout>
@@ -196,7 +218,6 @@ export default function ProjectDetails() {
     );
   }
 
-  // Calcula estatísticas para o projeto
   const allItems = checklists?.flatMap(c => c.checklist_items || []) || [];
   const completedItems = allItems.filter(item => item.checked);
   const totalItems = allItems.length;
@@ -206,7 +227,6 @@ export default function ProjectDetails() {
     return items.length > 0 && items.every(item => item.checked);
   }).length || 0;
 
-  // Filtra checklists baseado no filtro selecionado
   const filteredChecklists = checklists?.map(checklist => ({
     ...checklist,
     checklist_items: (checklist.checklist_items || []).filter(item => {
@@ -421,7 +441,6 @@ export default function ProjectDetails() {
           </Card>
         </div>
 
-        {/* Novo: Gerenciamento de arquivos */}
         <ProjectFilesManager projectId={projectId} />
 
         <div className="mb-6">
@@ -661,6 +680,14 @@ export default function ProjectDetails() {
             </TabsContent>
           </Tabs>
         </div>
+
+        <ProjectEditDialog
+          open={isEditOpen}
+          onOpenChange={setIsEditOpen}
+          project={project}
+          onSave={handleEditProject}
+          isLoading={isEditLoading}
+        />
       </div>
     </MainLayout>
   );
