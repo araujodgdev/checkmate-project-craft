@@ -1,5 +1,8 @@
 
 import React from "react";
+import { Check } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Checkbox } from "@/components/ui/checkbox";
 
 type ChecklistItem = {
   id: string;
@@ -15,22 +18,30 @@ type ProjectChecklistProps = {
 
 export function ProjectChecklist({ checklistTitle, items, onToggleItem }: ProjectChecklistProps) {
   return (
-    <section className="mb-6">
-      <h3 className="text-xl font-medium mb-3">{checklistTitle}</h3>
-      <ul className="space-y-2">
+    <section className="mb-6 bg-card rounded-lg p-4 border shadow-sm">
+      <h3 className="text-xl font-medium mb-4 pb-2 border-b">{checklistTitle}</h3>
+      <ul className="space-y-3">
         {items.map(({ id, description, checked }) => (
-          <li key={id} className="flex items-center gap-2">
-            <input
-              type="checkbox"
+          <li key={id} className="flex items-start gap-3 group">
+            <Checkbox
+              id={`item-${id}`}
               checked={checked}
-              onChange={() => onToggleItem(id)}
-              className="cursor-pointer"
+              onCheckedChange={() => onToggleItem(id)}
+              className="mt-1"
             />
-            <span className={checked ? "line-through text-muted-foreground" : ""}>{description}</span>
+            <label 
+              htmlFor={`item-${id}`}
+              className={cn(
+                "flex-1 cursor-pointer transition-colors",
+                checked ? "line-through text-muted-foreground" : ""
+              )}
+            >
+              {description}
+            </label>
           </li>
         ))}
         {items.length === 0 && (
-          <li className="text-muted-foreground">No items in this checklist.</li>
+          <li className="text-muted-foreground italic">Nenhum item neste checklist.</li>
         )}
       </ul>
     </section>

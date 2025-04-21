@@ -13,7 +13,11 @@ export default function ProjectDetails() {
   if (isLoading) {
     return (
       <MainLayout>
-        <div className="container py-8">Loading...</div>
+        <div className="container py-8">
+          <div className="flex justify-center items-center h-[60vh]">
+            <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
+          </div>
+        </div>
       </MainLayout>
     );
   }
@@ -21,7 +25,11 @@ export default function ProjectDetails() {
   if (error || !project) {
     return (
       <MainLayout>
-        <div className="container py-8">Failed to load project data.</div>
+        <div className="container py-8">
+          <div className="p-4 bg-destructive/10 text-destructive rounded-lg">
+            Não foi possível carregar os dados do projeto.
+          </div>
+        </div>
       </MainLayout>
     );
   }
@@ -49,7 +57,7 @@ export default function ProjectDetails() {
 
   return (
     <MainLayout>
-      <div className="container py-8 max-w-6xl mx-auto">
+      <div className="container py-8 max-w-5xl mx-auto">
         <ProjectHeader 
           projectName={project.name} 
           projectDescription={project.description} 
@@ -59,14 +67,23 @@ export default function ProjectDetails() {
           completedTasks={completedTasks} 
           totalTasks={totalTasks} 
         />
-        {checklists.map((checklist) => (
-          <ProjectChecklist
-            key={checklist.id}
-            checklistTitle={checklist.title}
-            items={checklist.checklist_items || []}
-            onToggleItem={(itemId) => handleToggleItem(checklist.id, itemId)}
-          />
-        ))}
+        
+        <div className="grid gap-6">
+          {checklists.map((checklist) => (
+            <ProjectChecklist
+              key={checklist.id}
+              checklistTitle={checklist.title}
+              items={checklist.checklist_items || []}
+              onToggleItem={(itemId) => handleToggleItem(checklist.id, itemId)}
+            />
+          ))}
+          
+          {checklists.length === 0 && (
+            <div className="text-center p-8 bg-muted/30 rounded-lg border border-dashed">
+              <p className="text-muted-foreground">Este projeto ainda não possui checklists.</p>
+            </div>
+          )}
+        </div>
       </div>
     </MainLayout>
   );
