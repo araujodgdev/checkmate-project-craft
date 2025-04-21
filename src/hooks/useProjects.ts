@@ -13,25 +13,54 @@ interface Project {
   progress: number;
   deadline: string | null;
   created_at: string | null;
+  completed?: boolean; // nova propriedade
 }
 
 export function useProjects() {
   const user = useAuthStore((s) => s.user);
   const queryClient = useQueryClient();
 
-  // Lista projetos do usuário autenticado
+  // Lista projetos do usuário autenticado, junto com checklists e items
   const { data, isLoading, error } = useQuery({
     queryKey: ["projects"],
     queryFn: async () => {
       if (!user) return [];
+      // Buscando projetos, checklists e checklist_items em uma única consulta
       const { data, error } = await supabase
         .from("projects")
-        .select("*")
+        .select(`
+          *,
+          checklists:checklists(
+            id,
+            checklist_items(
+              id,
+              checked
+            )
+          )
+        `)
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data as Project[] || [];
+
+      // Processa se projeto está concluído: todos os checklist_items (de todos os checklists) marcados
+      const projectsWithCompleted = (data as any[]).map((project: any) => {
+        const checklists = project.checklists ?? [];
+        // Juntando todos os checklist_items dos checklists do projeto
+        const allItems = checklists.flatMap(
+          (c: any) => c.checklist_items ?? []
+        );
+        // Se não há itens, está sempre em progresso
+        if (allItems.length === 0) {
+          return { ...project, completed: false };
+        }
+        // Se todos os itens estão checked, concluído
+        const completed = allItems.every((item: any) => item.checked);
+        return { ...project, completed };
+      });
+
+      // Remove a propriedade checklists para não poluir o Project retornado
+      return projectsWithCompleted.map(({ checklists, ...rest }) => rest) as Project[];
     },
     enabled: !!user,
   });
