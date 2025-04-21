@@ -20,10 +20,9 @@ export function MainLayout({ children, className, hideNav = false }: MainLayoutP
           "transition-all duration-300 ease-in-out",
           className
         )}>
-          {/* Header fixo no topo */}
-          <div className="sticky top-0 z-20 w-full bg-background flex justify-end items-center gap-4 py-4 px-4 md:px-6 border-b">
+          <div className="w-full flex justify-end items-center gap-4 py-4 px-4 md:px-6">
             <ThemeSwitch />
-            {/* Pode adicionar outros botões/icons, sempre à esquerda do ThemeSwitch */}
+            {/* Aqui podem entrar outros botões/icons, mas o ThemeSwitch sempre à esquerda */}
           </div>
           {children}
         </main>
@@ -31,4 +30,3 @@ export function MainLayout({ children, className, hideNav = false }: MainLayoutP
     </div>
   );
 }
-
