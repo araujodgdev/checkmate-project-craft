@@ -11,22 +11,7 @@ import { useProjects } from "@/hooks/useProjects";
 import { ProjectBasicInfoForm } from "./NewProject/ProjectBasicInfoForm";
 import { ProjectTechnicalForm } from "./NewProject/ProjectTechnicalForm";
 import { ProjectObjectivesForm } from "./NewProject/ProjectObjectivesForm";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import { Badge } from "@/components/ui/badge";
+import { useAnthropic } from "@/hooks/useAnthropic";
 
 const projectTypes = [
   { value: "web", label: "Web Application" },
@@ -55,6 +40,7 @@ export default function NewProject() {
   const [description, setDescription] = useState("");
   const [objectives, setObjectives] = useState("");
   const { createProject } = useProjects();
+  const { generateChecklist } = useAnthropic();
 
   const totalSteps = 3;
 
@@ -65,37 +51,6 @@ export default function NewProject() {
       setSelectedTechnologies([...selectedTechnologies, tech]);
     }
   };
-
-  async function generateChecklistFromAnthropic(projectDetails: Record<string, any>) {
-    try {
-      console.log("Enviando detalhes do projeto para a função:", JSON.stringify(projectDetails, null, 2));
-      
-      const { data, error } = await supabase.functions.invoke("generate-checklist-anthropic", {
-        method: "POST",
-        body: { project: projectDetails },
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      
-      console.log("Resposta bruta da função:", data, error);
-      
-      if (error || !data?.checklist) {
-        console.error("Erro completo da função:", error);
-        throw new Error(error?.message ?? "Erro ao gerar checklist com IA");
-      }
-      
-      if (!Array.isArray(data.checklist)) {
-        console.error("Formato de resposta inválido:", data);
-        throw new Error("Formato de resposta inválido da IA");
-      }
-      
-      return data.checklist as string[];
-    } catch (err: any) {
-      console.error("Erro completo:", err);
-      throw new Error("Falha IA: " + (err?.message || "Desconhecido"));
-    }
-  }
 
   const handleNext = async () => {
     if (step < totalSteps) {
@@ -140,12 +95,17 @@ export default function NewProject() {
             deadline: deadlineStr,
           };
           
-          console.log("Chamando IA para gerar checklist com:", JSON.stringify(projectDetails, null, 2));
-          generatedChecklist = await generateChecklistFromAnthropic(projectDetails);
+          console.log("Chamando API da Anthropic para gerar checklist com:", 
+            JSON.stringify(projectDetails, null, 2));
+          
+          generatedChecklist = await generateChecklist.mutateAsync(projectDetails);
+          
           console.log("Checklist gerada:", generatedChecklist);
         } catch (err: any) {
           console.error("Erro ao gerar checklist:", err);
-          toast.error("Erro ao gerar checklist automática", { description: err?.message || "Tente novamente." });
+          toast.error("Erro ao gerar checklist automática", { 
+            description: err?.message || "Tente novamente." 
+          });
           setLoading(false);
           return;
         }
@@ -192,7 +152,9 @@ export default function NewProject() {
               }
             }
           } catch (err: any) {
-            toast.error("Checklist criada parcialmente: salve manualmente!", { description: err?.message || "Parcialmente criada." });
+            toast.error("Checklist criada parcialmente: salve manualmente!", { 
+              description: err?.message || "Parcialmente criada." 
+            });
           }
         }
 
