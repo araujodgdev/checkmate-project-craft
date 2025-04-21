@@ -13,6 +13,7 @@ interface Project {
   progress: number;
   deadline: string | null;
   created_at: string | null;
+  is_public: boolean; // Added missing is_public property
 }
 
 export default function PublicProject() {
