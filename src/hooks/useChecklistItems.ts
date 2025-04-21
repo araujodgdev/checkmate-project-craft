@@ -1,4 +1,3 @@
-
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthStore } from "@/lib/store";
@@ -53,7 +52,12 @@ export function useChecklistItems(checklistId?: string) {
         .select()
         .maybeSingle() as any);
         
-      if (error) throw error;
+      if (error) {
+        console.error("Erro na mutação createItem:", error);
+        throw error;
+      }
+      
+      console.log("Item criado com sucesso:", data);
       return data as unknown as ChecklistItem;
     },
     onSuccess: () => {

@@ -29,6 +29,8 @@ export function AddChecklistItemForm({
   onCancel,
   loading
 }: AddChecklistItemFormProps) {
+  console.log("Form renderizado - dueDate:", dueDate, "isCritical:", isCritical);
+  
   return (
     <div className="space-y-4">
       <Input
@@ -52,7 +54,10 @@ export function AddChecklistItemForm({
         <div className="flex-1">
           <TaskDatePicker
             date={dueDate || undefined}
-            onDateChange={(date) => onDueDateChange(date || null)}
+            onDateChange={(date) => {
+              console.log("TaskDatePicker onDateChange:", date);
+              onDueDateChange(date || null);
+            }}
             className="w-full"
           />
         </div>
@@ -61,7 +66,10 @@ export function AddChecklistItemForm({
           <span className="text-sm text-muted-foreground">Crítico</span>
           <Switch 
             checked={isCritical} 
-            onCheckedChange={onIsCriticalChange}
+            onCheckedChange={(checked) => {
+              console.log("Switch onCheckedChange:", checked);
+              onIsCriticalChange(checked);
+            }}
             disabled={loading}
           />
         </div>
@@ -72,12 +80,14 @@ export function AddChecklistItemForm({
           variant="outline"
           onClick={onCancel}
           disabled={loading}
+          type="button"
         >
           Cancelar
         </Button>
         <Button
           onClick={onSubmit}
           disabled={!value.trim() || loading}
+          type="button"
         >
           <Calendar size={16} className="mr-2" /> 
           Adicionar

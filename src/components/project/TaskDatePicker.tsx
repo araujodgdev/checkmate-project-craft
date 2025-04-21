@@ -28,7 +28,9 @@ export function TaskDatePicker({
   className,
 }: TaskDatePickerProps) {
   const handleSelect = (newDate: Date | undefined) => {
+    console.log("Data selecionada:", newDate);
     onDateChange(newDate);
+    
     if (newDate) {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
@@ -56,6 +58,7 @@ export function TaskDatePicker({
             className
           )}
           disabled={disabled}
+          type="button"
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
           {date ? (

@@ -49,6 +49,9 @@ export function ChecklistItem({ checklist, isOpen, onToggle, filter }: Checklist
         dueDate: newItemDueDate,
         isCritical: newItemIsCritical,
       });
+      
+      console.log("Item criado com data:", newItemDueDate, "e crítico:", newItemIsCritical);
+      
       setNewItemText("");
       setNewItemDueDate(null);
       setNewItemIsCritical(false);
@@ -138,7 +141,7 @@ export function ChecklistItem({ checklist, isOpen, onToggle, filter }: Checklist
                 value={newItemText}
                 onChange={setNewItemText}
                 dueDate={newItemDueDate}
-                onDueDateChange={(date) => setNewItemDueDate(date || null)}
+                onDueDateChange={setNewItemDueDate}
                 isCritical={newItemIsCritical}
                 onIsCriticalChange={setNewItemIsCritical}
                 onSubmit={handleCreateItem}
