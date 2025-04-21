@@ -4,11 +4,16 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
 };
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { 
+      status: 204, 
+      headers: corsHeaders 
+    });
   }
 
   try {
@@ -17,7 +22,7 @@ serve(async (req) => {
     if (!project?.name || !project?.type || !project?.technologies) {
       return new Response(JSON.stringify({ error: "Dados do projeto insuficientes." }), {
         status: 400,
-        headers: corsHeaders,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -44,9 +49,9 @@ CHECKLIST:
     // Chamada Anthropic/Claude 3.5-Haiku
     const apiKey = Deno.env.get("ANTHROPIC_API_KEY");
     if (!apiKey) {
-      return new Response(JSON.stringify({ error: "Faltando CLÁUDE_API_KEY." }), {
+      return new Response(JSON.stringify({ error: "Faltando ANTHROPIC_API_KEY." }), {
         status: 400,
-        headers: corsHeaders,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -73,7 +78,7 @@ CHECKLIST:
       const error = await response.json().catch(() => null);
       return new Response(JSON.stringify({ error: error?.error?.message || "Erro Anthropic" }), {
         status: 500,
-        headers: corsHeaders,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -101,9 +106,10 @@ CHECKLIST:
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
+    console.error("Erro na função Edge:", error);
     return new Response(JSON.stringify({ error: error.message || "Erro inesperado" }), {
       status: 500,
-      headers: corsHeaders,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });

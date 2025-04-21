@@ -2,10 +2,18 @@ import { useState } from "react";
 import { MainLayout } from "@/components/layouts/main-layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { ArrowLeft, ArrowRight, Loader2, CheckCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useProjects } from "@/hooks/useProjects";
+import { ProjectBasicInfoForm } from "./NewProject/ProjectBasicInfoForm";
+import { ProjectTechnicalForm } from "./NewProject/ProjectTechnicalForm";
+import { ProjectObjectivesForm } from "./NewProject/ProjectObjectivesForm";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import {
   Select,
   SelectContent,
@@ -18,15 +26,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { CalendarIcon, ArrowLeft, ArrowRight, Loader2, CheckCircle } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { useProjects } from "@/hooks/useProjects";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { ProjectBasicInfoForm } from "./NewProject/ProjectBasicInfoForm";
-import { ProjectTechnicalForm } from "./NewProject/ProjectTechnicalForm";
-import { ProjectObjectivesForm } from "./NewProject/ProjectObjectivesForm";
 
 const projectTypes = [
   { value: "web", label: "Web Application" },
@@ -68,12 +68,25 @@ export default function NewProject() {
 
   async function generateChecklistFromAnthropic(projectDetails: Record<string, any>) {
     try {
+      console.log("Enviando detalhes do projeto para a função:", projectDetails);
+      
       const { data, error } = await supabase.functions.invoke("generate-checklist-anthropic", {
+        method: "POST",
         body: { project: projectDetails },
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
-      if (error || !data?.checklist) throw new Error(error?.message ?? "Erro ao gerar checklist com IA");
+      
+      console.log("Resposta da função:", data, error);
+      
+      if (error || !data?.checklist) {
+        throw new Error(error?.message ?? "Erro ao gerar checklist com IA");
+      }
+      
       return data.checklist as string[];
     } catch (err: any) {
+      console.error("Erro completo:", err);
       throw new Error("Falha IA: " + (err?.message || "Desconhecido"));
     }
   }
@@ -112,15 +125,20 @@ export default function NewProject() {
 
         let generatedChecklist: string[] = [];
         try {
-          generatedChecklist = await generateChecklistFromAnthropic({
+          const projectDetails = {
             name: projectName,
             description,
             type: projectType,
             technologies: selectedTechnologies,
             objectives,
             deadline: deadlineStr,
-          });
+          };
+          
+          console.log("Chamando IA para gerar checklist com:", projectDetails);
+          generatedChecklist = await generateChecklistFromAnthropic(projectDetails);
+          console.log("Checklist gerada:", generatedChecklist);
         } catch (err: any) {
+          console.error("Erro ao gerar checklist:", err);
           toast.error("Erro ao gerar checklist automática", { description: err?.message || "Tente novamente." });
           setLoading(false);
           return;
