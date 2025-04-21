@@ -13,7 +13,7 @@ interface Project {
   progress: number;
   deadline: string | null;
   created_at: string | null;
-  is_public: boolean; // Added missing is_public property
+  is_public: boolean;
 }
 
 export default function PublicProject() {
@@ -36,11 +36,14 @@ export default function PublicProject() {
         .from("projects")
         .select("*")
         .eq("id", projectId)
+        .eq("is_public", true)
         .maybeSingle();
 
       if (error || !data) {
+        console.error("Erro ao buscar projeto:", error);
         setNotFound(true);
       } else {
+        console.log("Projeto encontrado:", data);
         setProject(data);
       }
       setLoading(false);

@@ -2,6 +2,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthStore } from "@/lib/store";
+import { toast } from "sonner";
 
 export function useShareProject(projectId?: string) {
   const user = useAuthStore((s) => s.user);
@@ -22,7 +23,14 @@ export function useShareProject(projectId?: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["project", projectId] });
       queryClient.invalidateQueries({ queryKey: ["projects"] });
+      toast.success("Projeto compartilhado com sucesso!");
     },
+    onError: (error) => {
+      console.error("Erro ao compartilhar projeto:", error);
+      toast.error("Erro ao compartilhar projeto", {
+        description: "Tente novamente mais tarde."
+      });
+    }
   });
 
   // Link público do projeto
