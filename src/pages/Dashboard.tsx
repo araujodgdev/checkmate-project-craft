@@ -70,78 +70,91 @@ export default function Dashboard() {
 
         <div className="mb-8">
           <div className="flex flex-col md:flex-row gap-4 md:items-center justify-between mb-4">
-            <Tabs defaultValue="all" className="w-full md:w-auto">
+            <Tabs defaultValue="all" className="w-full">
               <TabsList>
                 <TabsTrigger value="all">All Projects</TabsTrigger>
                 <TabsTrigger value="active">In Progress</TabsTrigger>
                 <TabsTrigger value="completed">Completed</TabsTrigger>
               </TabsList>
-            </Tabs>
-            <div className="flex flex-1 md:max-w-sm items-center gap-2">
-              <div className="relative flex-1">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder="Search projects..."
-                  className="pl-8 bg-background"
-                />
+              
+              <div className="flex flex-1 md:max-w-sm items-center gap-2 mt-4 md:mt-0 md:ml-auto">
+                <div className="relative flex-1">
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="search"
+                    placeholder="Search projects..."
+                    className="pl-8 bg-background"
+                  />
+                </div>
+                <Button variant="outline" size="icon">
+                  <Filter size={18} />
+                </Button>
               </div>
-              <Button variant="outline" size="icon">
-                <Filter size={18} />
-              </Button>
-            </div>
+              
+              <TabsContent value="all" className="mt-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {mockProjects.map((project) => (
+                    <Link to={`/projects/${project.id}`} key={project.id} className="block group">
+                      <Card className="overflow-hidden transition-all hover:border-primary/50 hover:shadow-md h-full">
+                        <CardHeader className="pb-2">
+                          <div className="flex justify-between items-start">
+                            <CardTitle className="group-hover:text-primary transition-colors">
+                              {project.name}
+                            </CardTitle>
+                            <Badge variant="outline">{project.type}</Badge>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="pb-2">
+                          <div className="flex flex-wrap gap-2 mb-4">
+                            {project.technologies.map((tech) => (
+                              <Badge variant="secondary" key={tech}>
+                                {tech}
+                              </Badge>
+                            ))}
+                          </div>
+                          <div className="space-y-2">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-muted-foreground">Progress</span>
+                              <span className="font-medium">{project.progress}%</span>
+                            </div>
+                            <Progress value={project.progress} className="h-2" />
+                          </div>
+                        </CardContent>
+                        <CardFooter className="text-sm text-muted-foreground pt-1">
+                          Created on {new Date(project.createdAt).toLocaleDateString()}
+                        </CardFooter>
+                      </Card>
+                    </Link>
+                  ))}
+
+                  <Link to="/new-project" className="block">
+                    <Card className="border-dashed h-full flex flex-col items-center justify-center p-6 transition-colors hover:border-primary/50 hover:bg-primary/5">
+                      <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                        <Plus size={24} className="text-primary" />
+                      </div>
+                      <p className="font-medium text-primary">New Project</p>
+                      <p className="text-sm text-muted-foreground text-center mt-1">
+                        Create a new project and generate a checklist
+                      </p>
+                    </Card>
+                  </Link>
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="active">
+                <div className="py-4">
+                  <p className="text-muted-foreground">Showing in-progress projects.</p>
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="completed">
+                <div className="py-4">
+                  <p className="text-muted-foreground">Showing completed projects.</p>
+                </div>
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
-
-        <TabsContent value="all" className="mt-0">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mockProjects.map((project) => (
-              <Link to={`/projects/${project.id}`} key={project.id} className="block group">
-                <Card className="overflow-hidden transition-all hover:border-primary/50 hover:shadow-md h-full">
-                  <CardHeader className="pb-2">
-                    <div className="flex justify-between items-start">
-                      <CardTitle className="group-hover:text-primary transition-colors">
-                        {project.name}
-                      </CardTitle>
-                      <Badge variant="outline">{project.type}</Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pb-2">
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {project.technologies.map((tech) => (
-                        <Badge variant="secondary" key={tech}>
-                          {tech}
-                        </Badge>
-                      ))}
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Progress</span>
-                        <span className="font-medium">{project.progress}%</span>
-                      </div>
-                      <Progress value={project.progress} className="h-2" />
-                    </div>
-                  </CardContent>
-                  <CardFooter className="text-sm text-muted-foreground pt-1">
-                    Created on {new Date(project.createdAt).toLocaleDateString()}
-                  </CardFooter>
-                </Card>
-              </Link>
-            ))}
-
-            <Link to="/new-project" className="block">
-              <Card className="border-dashed h-full flex flex-col items-center justify-center p-6 transition-colors hover:border-primary/50 hover:bg-primary/5">
-                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                  <Plus size={24} className="text-primary" />
-                </div>
-                <p className="font-medium text-primary">New Project</p>
-                <p className="text-sm text-muted-foreground text-center mt-1">
-                  Create a new project and generate a checklist
-                </p>
-              </Card>
-            </Link>
-          </div>
-        </TabsContent>
       </div>
       
       <div className="fixed bottom-6 right-6 md:hidden">
