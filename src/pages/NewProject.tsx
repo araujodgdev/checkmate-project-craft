@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { MainLayout } from "@/components/layouts/main-layout";
 import { Button } from "@/components/ui/button";
@@ -61,6 +62,7 @@ export default function NewProject() {
 
   async function generateChecklistFromAnthropic(projectDetails: Record<string, any>) {
     try {
+      // Calling your edge function, no change here
       const { data, error } = await supabase.functions.invoke("generate-checklist-anthropic", {
         body: { project: projectDetails },
       });
@@ -126,17 +128,21 @@ export default function NewProject() {
 
         if (createdProject?.id && generatedChecklist.length > 0) {
           try {
-            await supabase.from("checklists").insert({
-              project_id: createdProject.id,
-              title: "Checklist inicial (gerada pela IA)",
-            });
-
-            const { data: checklistsData } = await supabase
+            // Correct insert on checklists table using correct typing
+            const { data: insertedChecklist, error: checklistError } = await supabase
               .from("checklists")
-              .select("id")
-              .eq("project_id", createdProject.id)
-              .order("created_at", { ascending: true });
-            const checklistId = checklistsData?.[0]?.id;
+              .insert({
+                project_id: createdProject.id,
+                title: "Checklist inicial (gerada pela IA)",
+              })
+              .select()
+              .maybeSingle();
+
+            if (checklistError || !insertedChecklist) {
+              throw checklistError || new Error("Erro ao criar checklist");
+            }
+
+            const checklistId = insertedChecklist.id;
 
             if (checklistId) {
               const itemsToInsert = generatedChecklist.map((desc, idx) => ({
@@ -146,7 +152,12 @@ export default function NewProject() {
                 order_index: idx + 1,
               }));
               if (itemsToInsert.length > 0) {
-                await supabase.from("checklist_items").insert(itemsToInsert);
+                const { error: checklistItemsError } = await supabase
+                  .from("checklist_items")
+                  .insert(itemsToInsert);
+                if (checklistItemsError) {
+                  throw checklistItemsError;
+                }
               }
             }
           } catch (err: any) {
