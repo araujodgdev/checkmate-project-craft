@@ -8,15 +8,15 @@ import { useAuthStore } from "@/lib/store";
 
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
-  const [width, setWidth] = useState(256); // Default width (64px when collapsed)
+  const [width, setWidth] = useState(256);
   const [isDragging, setIsDragging] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
-  const minWidth = 180; // Minimum width when expanded
-  const maxWidth = 400; // Maximum width when expanded
-  const collapsedWidth = 64; // Width when collapsed
-  
+  const minWidth = 180;
+  const maxWidth = 400;
+  const collapsedWidth = 64;
+
   const location = useLocation();
-  
+
   const navItems = [
     { label: "Dashboard", icon: Home, href: "/dashboard" },
     { label: "Projects", icon: List, href: "/projects" },
@@ -27,7 +27,7 @@ export function Sidebar() {
 
   const handleLogout = async () => {
     await logout();
-    window.location.href = "/auth"; // Redireciona para tela de login
+    window.location.href = "/auth";
   };
 
   const resize = useCallback((e: MouseEvent) => {
@@ -65,7 +65,6 @@ export function Sidebar() {
     if (e.key === 'Escape' && isDragging) {
       stopResize();
     }
-    // Allow keyboard resizing with arrow keys
     if (isDragging) {
       if (e.key === 'ArrowRight') {
         setWidth(prev => Math.min(prev + 10, maxWidth));
@@ -75,7 +74,6 @@ export function Sidebar() {
     }
   }, [startResize, stopResize, isDragging]);
 
-  // Clean up event listeners when component unmounts
   useEffect(() => {
     return () => {
       window.removeEventListener("mousemove", resize);
@@ -85,7 +83,6 @@ export function Sidebar() {
     };
   }, [resize, stopResize]);
 
-  // Update width when collapsed state changes
   useEffect(() => {
     if (collapsed) {
       setWidth(collapsedWidth);
@@ -94,7 +91,6 @@ export function Sidebar() {
     }
   }, [collapsed, width]);
 
-  // Debug logging to verify function is working
   useEffect(() => {
     console.log("Current sidebar width:", width);
   }, [width]);
@@ -105,7 +101,7 @@ export function Sidebar() {
         ref={sidebarRef}
         style={{ width: `${width}px` }}
         className={cn(
-          "h-screen border-r border-border bg-sidebar flex flex-col transition-all ease-in-out overflow-x-hidden",
+          "h-screen fixed border-r border-border bg-sidebar flex flex-col transition-all ease-in-out overflow-x-hidden",
           collapsed && "w-16",
           isDragging ? "transition-none" : "duration-300"
         )}
@@ -245,7 +241,6 @@ export function Sidebar() {
         </div>
       </div>
 
-      {/* Resizer handle and indicators */}
       {!collapsed && (
         <button
           type="button"
@@ -260,7 +255,6 @@ export function Sidebar() {
           aria-valuemax={maxWidth}
           aria-orientation="vertical"
         >
-          {/* Visual indicator - vertical line */}
           <div 
             className={cn(
               "absolute top-0 bottom-0 w-1 right-1/2 bg-border hover:bg-primary/50 transition-colors",
@@ -268,7 +262,6 @@ export function Sidebar() {
             )}
           />
           
-          {/* Grip icon indicator */}
           <div 
             className="absolute h-24 w-6 top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-none"
           >
