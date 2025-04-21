@@ -1,3 +1,4 @@
+
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -7,15 +8,15 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
-  const [width, setWidth] = useState(256); // Default width (64px when collapsed)
+  const [width, setWidth] = useState(256); // Default width
   const [isDragging, setIsDragging] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
-  const minWidth = 180; // Minimum width when expanded
-  const maxWidth = 400; // Maximum width when expanded
-  const collapsedWidth = 64; // Width when collapsed
-  
+  const minWidth = 180;
+  const maxWidth = 400;
+  const collapsedWidth = 64;
+
   const location = useLocation();
-  
+
   const navItems = [
     { label: "Dashboard", icon: Home, href: "/dashboard" },
     { label: "Projects", icon: List, href: "/projects" },
@@ -29,7 +30,6 @@ export function Sidebar() {
 
   const resize = useCallback((e: MouseEvent) => {
     if (collapsed || !sidebarRef.current) return;
-    
     const newWidth = Math.max(minWidth, Math.min(e.clientX, maxWidth));
     setWidth(newWidth);
   }, [collapsed]);
@@ -47,7 +47,7 @@ export function Sidebar() {
       e.preventDefault();
     }
     if (collapsed) return;
-    
+
     setIsDragging(true);
     document.body.style.cursor = 'ew-resize';
     document.body.style.userSelect = 'none';
@@ -62,7 +62,6 @@ export function Sidebar() {
     if (e.key === 'Escape' && isDragging) {
       stopResize();
     }
-    // Allow keyboard resizing with arrow keys
     if (isDragging) {
       if (e.key === 'ArrowRight') {
         setWidth(prev => Math.min(prev + 10, maxWidth));
@@ -72,7 +71,6 @@ export function Sidebar() {
     }
   }, [startResize, stopResize, isDragging]);
 
-  // Clean up event listeners when component unmounts
   useEffect(() => {
     return () => {
       window.removeEventListener("mousemove", resize);
@@ -82,7 +80,6 @@ export function Sidebar() {
     };
   }, [resize, stopResize]);
 
-  // Update width when collapsed state changes
   useEffect(() => {
     if (collapsed) {
       setWidth(collapsedWidth);
@@ -91,24 +88,33 @@ export function Sidebar() {
     }
   }, [collapsed, width]);
 
-  // Debug logging to verify function is working
   useEffect(() => {
     console.log("Current sidebar width:", width);
   }, [width]);
 
   return (
-    <div className="relative h-screen flex">
+    <>
       <div
         ref={sidebarRef}
-        style={{ width: `${width}px` }}
+        style={{
+          width: `${width}px`,
+          left: 0,
+          top: 0,
+          bottom: 0,
+          height: "100vh",
+          position: "fixed",
+          zIndex: 40,
+          transition: isDragging ? "" : "width 0.3s",
+        }}
         className={cn(
-          "h-screen border-r border-border bg-sidebar flex flex-col transition-all ease-in-out overflow-x-hidden",
+          "border-r border-border bg-sidebar flex flex-col overflow-x-hidden h-screen",
           collapsed && "w-16",
-          isDragging ? "transition-none" : "duration-300"
+          isDragging ? "" : "duration-300"
         )}
       >
+        {/* Sidebar content remains igual */}
         <div className="flex items-center p-4 border-b border-border min-w-0">
-          <Link 
+          <Link
             to="/"
             className={cn(
               "flex items-center gap-2 font-semibold text-sidebar-foreground transition-opacity min-w-0 overflow-hidden",
@@ -116,7 +122,7 @@ export function Sidebar() {
             )}
           >
             <CheckCircle size={24} className="flex-shrink-0 text-primary" />
-            <span className={cn("transition-opacity duration-300 truncate", 
+            <span className={cn("transition-opacity duration-300 truncate",
               collapsed ? "opacity-0 w-0" : "opacity-100"
             )}>
               CheckMate
@@ -124,9 +130,9 @@ export function Sidebar() {
           </Link>
           {!collapsed && <span className="flex-1" />}
           {!collapsed && (
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => setCollapsed(true)}
               className="text-sidebar-foreground ml-auto flex-shrink-0"
             >
@@ -134,7 +140,6 @@ export function Sidebar() {
             </Button>
           )}
         </div>
-
         <div className="flex-1 py-4 overflow-y-auto overflow-x-hidden">
           <nav className="px-2 space-y-1">
             {navItems.map((item) => {
@@ -148,7 +153,7 @@ export function Sidebar() {
                           variant={isActive ? "default" : "ghost"}
                           className={cn(
                             "w-full overflow-hidden",
-                            collapsed ? "justify-center px-0" : "justify-start", 
+                            collapsed ? "justify-center px-0" : "justify-start",
                             "mb-1",
                             isActive ? "bg-sidebar-primary text-sidebar-primary-foreground" : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                           )}
@@ -171,7 +176,6 @@ export function Sidebar() {
             })}
           </nav>
         </div>
-
         <div className="p-4 border-t border-border">
           <div className="flex gap-2">
             <TooltipProvider delayDuration={collapsed ? 100 : 1000}>
@@ -199,7 +203,6 @@ export function Sidebar() {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-
             {!collapsed && (
               <TooltipProvider delayDuration={1000}>
                 <Tooltip>
@@ -220,7 +223,6 @@ export function Sidebar() {
               </TooltipProvider>
             )}
           </div>
-          
           {collapsed && (
             <TooltipProvider delayDuration={100}>
               <Tooltip>
@@ -241,12 +243,11 @@ export function Sidebar() {
           )}
         </div>
       </div>
-
-      {/* Resizer handle and indicators */}
+      {/* Resizer handle e indicators */}
       {!collapsed && (
         <button
           type="button"
-          className="absolute top-0 h-full w-4 cursor-ew-resize z-20 border-0 bg-transparent p-0 m-0 focus:outline-none"
+          className="fixed top-0 h-full w-4 cursor-ew-resize z-50 border-0 bg-transparent p-0 m-0 focus:outline-none"
           style={{ left: `${width - 2}px` }}
           onMouseDown={startResize}
           onKeyDown={handleKeyDown}
@@ -257,39 +258,37 @@ export function Sidebar() {
           aria-valuemax={maxWidth}
           aria-orientation="vertical"
         >
-          {/* Visual indicator - vertical line */}
-          <div 
+          <div
             className={cn(
               "absolute top-0 bottom-0 w-1 right-1/2 bg-border hover:bg-primary/50 transition-colors",
               isDragging && "bg-primary/50"
             )}
           />
-          
-          {/* Grip icon indicator */}
-          <div 
+          <div
             className="absolute h-24 w-6 top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-none"
           >
-            <GripVertical 
-              size={16} 
+            <GripVertical
+              size={16}
               className={cn(
                 "text-sidebar-foreground transition-opacity",
                 isDragging ? "opacity-100" : "opacity-0 hover:opacity-100"
-              )} 
+              )}
             />
           </div>
         </button>
       )}
-      
       {collapsed && (
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           size="sm"
           onClick={() => setCollapsed(false)}
-          className="absolute left-14 top-4 h-8 w-8 rounded-full bg-background border border-border shadow-md flex items-center justify-center text-foreground hover:bg-accent"
+          className="fixed left-14 top-4 h-8 w-8 rounded-full bg-background border border-border shadow-md flex items-center justify-center text-foreground hover:bg-accent z-50"
         >
           <ChevronRight size={16} />
         </Button>
       )}
-    </div>
+    </>
   );
 }
+
+// Atenção: este arquivo está ficando muito longo! Considere pedir refatoração em arquivos menores após os ajustes.
