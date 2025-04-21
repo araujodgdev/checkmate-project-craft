@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { MainLayout } from "@/components/layouts/main-layout";
 import { Button } from "@/components/ui/button";
@@ -52,6 +51,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+
+import { ProjectFilesManager } from "@/components/project/ProjectFilesManager";
 
 export default function ProjectDetails() {
   const { projectId } = useParams<{projectId: string}>();
@@ -419,6 +420,9 @@ export default function ProjectDetails() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Novo: Gerenciamento de arquivos */}
+        <ProjectFilesManager projectId={projectId} />
 
         <div className="mb-6">
           <Tabs defaultValue="checklist" className="w-full">
