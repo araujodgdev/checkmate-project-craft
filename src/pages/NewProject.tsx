@@ -68,7 +68,7 @@ export default function NewProject() {
 
   async function generateChecklistFromAnthropic(projectDetails: Record<string, any>) {
     try {
-      console.log("Enviando detalhes do projeto para a função:", projectDetails);
+      console.log("Enviando detalhes do projeto para a função:", JSON.stringify(projectDetails, null, 2));
       
       const { data, error } = await supabase.functions.invoke("generate-checklist-anthropic", {
         method: "POST",
@@ -78,10 +78,16 @@ export default function NewProject() {
         },
       });
       
-      console.log("Resposta da função:", data, error);
+      console.log("Resposta bruta da função:", data, error);
       
       if (error || !data?.checklist) {
+        console.error("Erro completo da função:", error);
         throw new Error(error?.message ?? "Erro ao gerar checklist com IA");
+      }
+      
+      if (!Array.isArray(data.checklist)) {
+        console.error("Formato de resposta inválido:", data);
+        throw new Error("Formato de resposta inválido da IA");
       }
       
       return data.checklist as string[];
@@ -134,7 +140,7 @@ export default function NewProject() {
             deadline: deadlineStr,
           };
           
-          console.log("Chamando IA para gerar checklist com:", projectDetails);
+          console.log("Chamando IA para gerar checklist com:", JSON.stringify(projectDetails, null, 2));
           generatedChecklist = await generateChecklistFromAnthropic(projectDetails);
           console.log("Checklist gerada:", generatedChecklist);
         } catch (err: any) {
