@@ -20,10 +20,16 @@ export function useAnthropic() {
     setError(null);
 
     try {
+      // Obter a sessão atual para usar o token de autenticação
+      const { data: authData } = await supabase.auth.getSession();
+      
       const { data, error: funcError } = await supabase.functions.invoke(
         "generate-checklist-anthropic",
         {
           body: { projectDetails },
+          headers: authData?.session?.access_token 
+            ? { Authorization: `Bearer ${authData.session.access_token}` }
+            : undefined
         }
       );
 
