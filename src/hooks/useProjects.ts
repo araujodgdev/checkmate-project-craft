@@ -3,6 +3,18 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthStore } from "@/lib/store";
 
+interface Project {
+  id: string;
+  user_id: string;
+  name: string;
+  description: string | null;
+  type: string;
+  technologies: string[] | null;
+  progress: number;
+  deadline: string | null;
+  created_at: string | null;
+}
+
 export function useProjects() {
   const user = useAuthStore((s) => s.user);
   const queryClient = useQueryClient();
@@ -19,7 +31,7 @@ export function useProjects() {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data || [];
+      return data as Project[] || [];
     },
     enabled: !!user,
   });
@@ -43,7 +55,7 @@ export function useProjects() {
         .select()
         .maybeSingle();
       if (error) throw error;
-      return data;
+      return data as Project;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
@@ -71,7 +83,7 @@ export function useProjects() {
         .maybeSingle();
 
       if (error) throw error;
-      return data;
+      return data as Project;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["projects"] });

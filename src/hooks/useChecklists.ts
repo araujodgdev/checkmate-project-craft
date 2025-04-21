@@ -3,6 +3,24 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthStore } from "@/lib/store";
 
+// Definindo tipos locais para nossa base de dados
+interface ChecklistItem {
+  id: string;
+  checklist_id: string;
+  description: string;
+  checked: boolean;
+  order_index: number;
+  created_at: string;
+}
+
+interface Checklist {
+  id: string;
+  project_id: string;
+  title: string;
+  created_at: string;
+  checklist_items?: ChecklistItem[];
+}
+
 export function useChecklists(projectId?: string) {
   const user = useAuthStore((s) => s.user);
   const queryClient = useQueryClient();
@@ -23,7 +41,7 @@ export function useChecklists(projectId?: string) {
         .order("created_at", { ascending: true });
 
       if (error) throw error;
-      return data || [];
+      return data as Checklist[] || [];
     },
     enabled: !!user && !!projectId,
   });
@@ -43,7 +61,7 @@ export function useChecklists(projectId?: string) {
         .maybeSingle();
         
       if (error) throw error;
-      return data;
+      return data as Checklist;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["checklists", projectId] });
@@ -63,7 +81,7 @@ export function useChecklists(projectId?: string) {
         .maybeSingle();
         
       if (error) throw error;
-      return data;
+      return data as Checklist;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["checklists", projectId] });

@@ -5,6 +5,18 @@ import { useAuthStore } from "@/lib/store";
 import { useChecklists } from "./useChecklists";
 import { useProjects } from "./useProjects";
 
+interface Project {
+  id: string;
+  user_id: string;
+  name: string;
+  description: string | null;
+  type: string;
+  technologies: string[] | null;
+  progress: number;
+  deadline: string | null;
+  created_at: string | null;
+}
+
 export function useProject(projectId?: string) {
   const user = useAuthStore((s) => s.user);
   const queryClient = useQueryClient();
@@ -28,7 +40,7 @@ export function useProject(projectId?: string) {
         .maybeSingle();
 
       if (error) throw error;
-      return data;
+      return data as Project;
     },
     enabled: !!user && !!projectId,
   });
