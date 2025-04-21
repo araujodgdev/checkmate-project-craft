@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +22,7 @@ export default function AuthPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const login = useAuthStore(state => state.login);
+  const signup = useAuthStore(state => state.signup);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,30 +62,19 @@ export default function AuthPage() {
       return;
     }
 
-    // Em um cenário real, aqui chamaríamos uma função de registro do store
-    // Por enquanto, vamos simular o registro e depois fazer login
-    setTimeout(async () => {
-      try {
-        const success = await login(email, password);
-        
-        if (success) {
-          toast.success("Cadastro realizado com sucesso", {
-            description: "Bem-vindo ao CheckMate!"
-          });
-          navigate(from);
-        } else {
-          toast.error("Falha no cadastro", {
-            description: "Não foi possível criar sua conta."
-          });
-        }
-      } catch (error) {
-        toast.error("Erro no cadastro", {
-          description: "Ocorreu um erro ao tentar criar sua conta."
-        });
-      } finally {
-        setLoading(false);
-      }
-    }, 1500);
+    const success = await signup(email, password);
+    setLoading(false);
+
+    if (success) {
+      toast.success("Cadastro realizado com sucesso", {
+        description: "Bem-vindo ao CheckMate!"
+      });
+      navigate(from);
+    } else {
+      toast.error("Falha no cadastro", {
+        description: "Não foi possível criar sua conta. Tente novamente com outro email."
+      });
+    }
   };
 
   return (

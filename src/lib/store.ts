@@ -1,6 +1,7 @@
-
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { supabase } from "@/integrations/supabase/client";
+import { User, Session } from "@supabase/supabase-js";
 
 // Types
 type ProjectType = 'web' | 'mobile' | 'backend' | 'fullstack' | 'desktop';
@@ -32,11 +33,14 @@ interface Task {
 }
 
 interface AuthState {
-  user: { id: string; email: string } | null;
+  user: User | null;
+  session: Session | null;
   isAuthenticated: boolean;
-  setUser: (user: { id: string; email: string } | null) => void;
+  setSessionUser: (session: Session | null) => void;
   login: (email: string, password: string) => Promise<boolean>;
-  logout: () => void;
+  logout: () => Promise<void>;
+  signup: (email: string, password: string) => Promise<boolean>;
+  initializeAuth: () => void;
 }
 
 interface ProjectState {
@@ -68,22 +72,88 @@ const generateMockProject = (): Project => ({
   createdAt: new Date().toISOString(),
 });
 
-// Auth Store
+// Auth Store real com Supabase
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
+      session: null,
       isAuthenticated: false,
-      setUser: (user) => set({ user, isAuthenticated: !!user }),
-      login: async (email, password) => {
-        // This would be replaced with actual Supabase authentication
+
+      setSessionUser: (session) => {
         set({
-          user: { id: '1', email },
+          session,
+          user: session?.user ?? null,
+          isAuthenticated: !!session?.user,
+        });
+      },
+
+      // Real login com Supabase
+      login: async (email, password) => {
+        const { error, data } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error || !data.session) {
+          set({ user: null, session: null, isAuthenticated: false });
+          return false;
+        }
+        set({
+          session: data.session,
+          user: data.session.user,
           isAuthenticated: true,
         });
         return true;
       },
-      logout: () => set({ user: null, isAuthenticated: false }),
+
+      // Real signup com Supabase
+      signup: async (email, password) => {
+        const { error, data } = await supabase.auth.signUp({
+          email,
+          password,
+        });
+        if (error || !data.session) {
+          set({ user: null, session: null, isAuthenticated: false });
+          return false;
+        }
+        set({
+          session: data.session,
+          user: data.session.user,
+          isAuthenticated: true,
+        });
+        return true;
+      },
+
+      // Real logout com Supabase
+      logout: async () => {
+        await supabase.auth.signOut();
+        set({ user: null, session: null, isAuthenticated: false });
+      },
+
+      // Detectar sessão atual na inicialização e setar listeners
+      initializeAuth: () => {
+        // Setar primeiro o listener, depois buscar sessão.
+        const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+          set({
+            session,
+            user: session?.user ?? null,
+            isAuthenticated: !!session?.user,
+          });
+        });
+
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          set({
+            session,
+            user: session?.user ?? null,
+            isAuthenticated: !!session?.user,
+          });
+        });
+
+        // Cleanup assinando a unsubscribe se necessário (pode ser usado no futuro)
+        return () => {
+          listener.subscription.unsubscribe();
+        };
+      },
     }),
     {
       name: 'checkmate-auth',
