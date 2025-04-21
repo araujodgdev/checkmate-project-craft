@@ -1,13 +1,15 @@
 
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+
+// !!! ATENÇÃO: sua chave será exposta no frontend após editar aqui.
+// Produção recomenda sempre usar um backend.
+const ANTHROPIC_API_KEY = "SUA_CHAVE_ANTHROPIC_AQUI";
 
 export function useAnthropic() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Mutação para gerar checklist usando a API da Anthropic
   const generateChecklist = useMutation({
     mutationFn: async (projectDetails: {
       name: string;
@@ -19,34 +21,59 @@ export function useAnthropic() {
     }) => {
       setIsLoading(true);
       setError(null);
-      
+
       try {
-        console.log("Detalhes do projeto enviados:", projectDetails);
-        
-        // Chamar a Edge Function do Supabase em vez da API da Anthropic diretamente
-        const { data, error: funcError } = await supabase.functions.invoke(
-          'generate-checklist-anthropic',
-          {
-            body: {
-              projectDetails
+        // Monta prompt ou convert projectDetails para a mensagem desejada pelo seu modelo Anthropic
+        const anthropicPayload = {
+          model: "claude-3-haiku-20240307", // ajuste conforme o modelo contratado
+          max_tokens: 1024,
+          messages: [
+            {
+              role: "user",
+              content:
+                `Crie um checklist para desenvolvimento do projeto:\n\n` +
+                `Nome: ${projectDetails.name}\n` +
+                `Descrição: ${projectDetails.description}\n` +
+                `Tipo: ${projectDetails.type}\n` +
+                `Tecnologias: ${projectDetails.technologies.join(", ")}\n` +
+                `Objetivos: ${projectDetails.objectives}\n` +
+                (projectDetails.deadline ? `Deadline: ${projectDetails.deadline}\n` : '') +
+                `\nMe retorne apenas uma lista de checklist em português, separada por QUEBRA DE LINHA e SEM NENHUM COMPLEMENTO, só a lista mesmo.`
             }
-          }
-        );
+          ]
+        };
 
-        if (funcError) {
-          console.error("Erro na chamada da Edge Function:", funcError);
-          throw new Error(`Erro ao chamar a função: ${funcError.message}`);
+        // Faz a requisição para Anthropic direto via fetch
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'x-api-key': ANTHROPIC_API_KEY,
+            'anthropic-version': '2023-06-01',
+            'content-type': 'application/json'
+            // CORS: O navegador vai adicionar a Origin automaticamente
+          },
+          body: JSON.stringify(anthropicPayload)
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Erro Anthropic: ${errorText}`);
         }
 
-        console.log("Resposta da Edge Function:", data);
-        
-        if (!data?.items || !Array.isArray(data.items)) {
-          throw new Error("Formato de resposta inválido da função");
-        }
-        
-        return data.items;
+        const data = await response.json();
+
+        // Esperamos que a resposta venha em data.content[0]?.text (verifique a estrutura real do retorno)
+        const checklistText = data?.content?.[0]?.text || '';
+        if (!checklistText) throw new Error("A resposta da IA veio vazia!");
+
+        // Divide a resposta em itens do checklist, assumindo um item por linha
+        const items = checklistText
+          .split(/\r?\n/)
+          .map((t: string) => t.trim())
+          .filter(Boolean);
+
+        return items;
       } catch (err: any) {
-        console.error("Erro completo:", err);
         setError(err?.message || "Falha ao gerar checklist");
         throw err;
       } finally {
