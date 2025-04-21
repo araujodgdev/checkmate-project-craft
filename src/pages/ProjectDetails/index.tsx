@@ -7,7 +7,7 @@ import { ProjectChecklist } from "./ProjectChecklist";
 import { useProject } from "@/hooks/useProject";
 
 export default function ProjectDetails() {
-  const { data: project, isLoading, error } = useProject();
+  const { project, isLoading, error } = useProject();
   const [checklists, setChecklists] = useState(project?.checklists || []);
 
   if (isLoading) {
