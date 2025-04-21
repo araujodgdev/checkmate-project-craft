@@ -7,8 +7,8 @@ import { ProjectChecklist } from "./ProjectChecklist";
 import { useProject } from "@/hooks/useProject";
 
 export default function ProjectDetails() {
-  const { project, isLoading, error } = useProject();
-  const [checklists, setChecklists] = useState(project?.checklists || []);
+  const { project, checklists: initialChecklists, isLoading, error } = useProject();
+  const [checklists, setChecklists] = useState(initialChecklists || []);
 
   if (isLoading) {
     return (
