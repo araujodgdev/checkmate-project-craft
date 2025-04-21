@@ -31,14 +31,15 @@ export function useChecklists(projectId?: string) {
     queryFn: async () => {
       if (!user || !projectId) return [];
       
-      const { data, error } = await supabase
-        .from("checklists")
+      // Usamos type assertion para lidar com as limitações do tipo Supabase
+      const { data, error } = await (supabase
+        .from("checklists" as any)
         .select(`
           *,
           checklist_items(*)
         `)
         .eq("project_id", projectId)
-        .order("created_at", { ascending: true });
+        .order("created_at", { ascending: true }) as any);
 
       if (error) throw error;
       return data as unknown as Checklist[] || [];
@@ -51,14 +52,15 @@ export function useChecklists(projectId?: string) {
     mutationFn: async ({ projectId, title }: { projectId: string; title: string }) => {
       if (!user) throw new Error("Usuário não autenticado");
       
-      const { error, data } = await supabase
-        .from("checklists")
+      // Usamos type assertion para lidar com as limitações do tipo Supabase
+      const { error, data } = await (supabase
+        .from("checklists" as any)
         .insert({
           project_id: projectId,
           title
-        })
+        } as any)
         .select()
-        .maybeSingle();
+        .maybeSingle() as any);
         
       if (error) throw error;
       return data as unknown as Checklist;
@@ -73,12 +75,13 @@ export function useChecklists(projectId?: string) {
     mutationFn: async ({ id, title }: { id: string; title: string }) => {
       if (!user) throw new Error("Usuário não autenticado");
       
-      const { error, data } = await supabase
-        .from("checklists")
-        .update({ title })
+      // Usamos type assertion para lidar com as limitações do tipo Supabase
+      const { error, data } = await (supabase
+        .from("checklists" as any)
+        .update({ title } as any)
         .eq("id", id)
         .select()
-        .maybeSingle();
+        .maybeSingle() as any);
         
       if (error) throw error;
       return data as unknown as Checklist;
@@ -93,10 +96,11 @@ export function useChecklists(projectId?: string) {
     mutationFn: async (id: string) => {
       if (!user) throw new Error("Usuário não autenticado");
       
-      const { error } = await supabase
-        .from("checklists")
+      // Usamos type assertion para lidar com as limitações do tipo Supabase
+      const { error } = await (supabase
+        .from("checklists" as any)
         .delete()
-        .eq("id", id);
+        .eq("id", id) as any);
         
       if (error) throw error;
       return id;
