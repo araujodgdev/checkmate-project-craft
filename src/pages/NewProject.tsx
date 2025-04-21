@@ -48,6 +48,10 @@ export default function NewProject() {
   const [loading, setLoading] = useState(false);
   const [selectedTechnologies, setSelectedTechnologies] = useState<string[]>([]);
   const [deadline, setDeadline] = useState<Date | undefined>(undefined);
+  const [projectName, setProjectName] = useState("");
+  const [projectType, setProjectType] = useState("");
+  const [description, setDescription] = useState("");
+  const [objectives, setObjectives] = useState("");
   const { createProject } = useProjects();
 
   const totalSteps = 3;
@@ -75,28 +79,31 @@ export default function NewProject() {
 
   const handleNext = async () => {
     if (step < totalSteps) {
+      if (step === 1 && !projectName) {
+        toast.error("Preencha o nome do projeto");
+        return;
+      }
+      
+      if (step === 1 && !projectType) {
+        toast.error("Selecione um tipo de projeto");
+        return;
+      }
+      
+      if (step === 2 && selectedTechnologies.length === 0) {
+        toast.error("Selecione pelo menos uma tecnologia");
+        return;
+      }
+      
       setStep(step + 1);
       window.scrollTo(0, 0);
     } else {
       setLoading(true);
       try {
-        const projectName = (
-          document.getElementById("project-name") as HTMLInputElement
-        )?.value;
-        const description = (
-          document.getElementById("project-description") as HTMLTextAreaElement
-        )?.value;
-        const type = (
-          document.querySelector("[data-state=checked]") as HTMLElement
-        )?.innerText ?? "web";
         const deadlineStr = deadline
           ? deadline.toISOString().split("T")[0]
           : undefined;
-        const objectives = (
-          document.getElementById("objectives") as HTMLTextAreaElement
-        )?.value;
 
-        if (!projectName || !type || selectedTechnologies.length === 0) {
+        if (!projectName || !projectType || selectedTechnologies.length === 0) {
           toast.error("Preencha os campos obrigatórios.");
           setLoading(false);
           return;
@@ -107,7 +114,7 @@ export default function NewProject() {
           generatedChecklist = await generateChecklistFromAnthropic({
             name: projectName,
             description,
-            type,
+            type: projectType,
             technologies: selectedTechnologies,
             objectives,
             deadline: deadlineStr,
@@ -121,7 +128,7 @@ export default function NewProject() {
         const createdProject = await createProject.mutateAsync({
           name: projectName,
           description,
-          type,
+          type: projectType,
           technologies: selectedTechnologies,
           deadline: deadlineStr,
         });
@@ -224,12 +231,17 @@ export default function NewProject() {
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="project-name">Project Name <span className="text-destructive">*</span></Label>
-                    <Input id="project-name" placeholder="Enter project name" />
+                    <Input 
+                      id="project-name" 
+                      placeholder="Enter project name"
+                      value={projectName}
+                      onChange={(e) => setProjectName(e.target.value)}
+                    />
                   </div>
                   
                   <div className="space-y-2">
                     <Label htmlFor="project-type">Project Type <span className="text-destructive">*</span></Label>
-                    <Select>
+                    <Select value={projectType} onValueChange={setProjectType}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select project type" />
                       </SelectTrigger>
@@ -249,6 +261,8 @@ export default function NewProject() {
                       id="project-description" 
                       placeholder="Brief description of your project (optional)"
                       rows={4}
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
                     />
                   </div>
                 </div>
@@ -340,6 +354,8 @@ export default function NewProject() {
                       id="objectives" 
                       placeholder="What are the main goals of this project?"
                       rows={4}
+                      value={objectives}
+                      onChange={(e) => setObjectives(e.target.value)}
                     />
                   </div>
                   
