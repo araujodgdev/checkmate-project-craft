@@ -10,7 +10,7 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Always add CORS headers to every response
+  // Always handle OPTIONS requests for CORS preflight
   if (req.method === "OPTIONS") {
     return new Response('ok', { 
       headers: corsHeaders,
