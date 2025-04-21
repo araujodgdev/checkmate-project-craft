@@ -254,7 +254,7 @@ export default function ProjectDetails() {
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2 mt-4 lg:mt-0">
-              <Button variant="outline" size="sm" className="gap-2">
+              <Button variant="outline" size="sm" className="gap-2" onClick={() => setIsEditOpen(true)}>
                 <PenSquare size={16} />
                 <span className="hidden md:inline">Editar Projeto</span>
               </Button>
