@@ -50,10 +50,58 @@ export function useProjects() {
     },
   });
 
+  // Mutação para atualizar projeto
+  const updateProject = useMutation({
+    mutationFn: async ({ id, ...updates }: { 
+      id: string;
+      name?: string;
+      description?: string;
+      type?: string;
+      technologies?: string[];
+      progress?: number;
+      deadline?: string;
+    }) => {
+      if (!user) throw new Error("Usuário não autenticado");
+      const { error, data } = await supabase
+        .from("projects")
+        .update(updates)
+        .eq("id", id)
+        .eq("user_id", user.id)
+        .select()
+        .maybeSingle();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+    },
+  });
+
+  // Mutação para deletar projeto
+  const deleteProject = useMutation({
+    mutationFn: async (id: string) => {
+      if (!user) throw new Error("Usuário não autenticado");
+      const { error } = await supabase
+        .from("projects")
+        .delete()
+        .eq("id", id)
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+      return id;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+    },
+  });
+
   return {
     projects: data,
     isLoading,
     error,
     createProject,
+    updateProject,
+    deleteProject
   };
 }

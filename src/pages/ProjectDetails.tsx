@@ -1,101 +1,95 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MainLayout } from "@/components/layouts/main-layout";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Link, useParams } from "react-router-dom";
-import { Calendar, CheckCircle2, ChevronDown, ChevronRight, ClipboardCheck, Download, Filter, PenSquare, RefreshCw, SquarePen } from "lucide-react";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import { 
+  Calendar, 
+  CheckCircle2, 
+  ChevronDown, 
+  ChevronRight, 
+  ClipboardCheck, 
+  Download, 
+  Filter, 
+  PenSquare, 
+  RefreshCw, 
+  SquarePen,
+  Plus,
+  Trash2,
+  Loader2,
+  AlertCircle
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
-
-// Mock data
-const projectDetails = {
-  id: "new-project-id",
-  name: "E-commerce Platform",
-  type: "Web Application",
-  description: "A full-featured e-commerce platform with product listings, cart, checkout, and admin panel.",
-  technologies: ["React", "Node.js", "MongoDB", "Express"],
-  progress: 42,
-  createdAt: "2023-10-15",
-  deadline: "2023-12-31",
-};
-
-// Mock categories and tasks
-const checklistCategories = [
-  {
-    id: "setup",
-    name: "Project Setup",
-    progress: 80,
-    tasks: [
-      { id: "task1", name: "Initialize Git repository", completed: true, priority: "low" },
-      { id: "task2", name: "Set up project structure", completed: true, priority: "high" },
-      { id: "task3", name: "Configure build tools", completed: true, priority: "medium" },
-      { id: "task4", name: "Set up linting and code formatting", completed: true, priority: "medium" },
-      { id: "task5", name: "Create README with setup instructions", completed: false, priority: "low" },
-    ],
-  },
-  {
-    id: "auth",
-    name: "Authentication & Security",
-    progress: 33,
-    tasks: [
-      { id: "task6", name: "Implement user registration", completed: true, priority: "high" },
-      { id: "task7", name: "Create login functionality", completed: true, priority: "high" },
-      { id: "task8", name: "Set up JWT authentication", completed: false, priority: "high" },
-      { id: "task9", name: "Add password reset flow", completed: false, priority: "medium" },
-      { id: "task10", name: "Implement role-based access control", completed: false, priority: "medium" },
-      { id: "task11", name: "Add CSRF protection", completed: false, priority: "high" },
-    ],
-  },
-  {
-    id: "frontend",
-    name: "Frontend Development",
-    progress: 40,
-    tasks: [
-      { id: "task12", name: "Create responsive layout", completed: true, priority: "high" },
-      { id: "task13", name: "Design and implement product listing page", completed: true, priority: "high" },
-      { id: "task14", name: "Build product detail page", completed: false, priority: "high" },
-      { id: "task15", name: "Implement shopping cart functionality", completed: false, priority: "high" },
-      { id: "task16", name: "Create checkout process", completed: false, priority: "high" },
-    ],
-  },
-  {
-    id: "backend",
-    name: "Backend Development",
-    progress: 25,
-    tasks: [
-      { id: "task17", name: "Design database schema", completed: true, priority: "high" },
-      { id: "task18", name: "Create API endpoints for products", completed: true, priority: "high" },
-      { id: "task19", name: "Implement user management API", completed: false, priority: "medium" },
-      { id: "task20", name: "Build order processing system", completed: false, priority: "high" },
-      { id: "task21", name: "Add payment integration", completed: false, priority: "high" },
-      { id: "task22", name: "Implement search functionality", completed: false, priority: "medium" },
-      { id: "task23", name: "Create admin API endpoints", completed: false, priority: "medium" },
-    ],
-  },
-  {
-    id: "testing",
-    name: "Testing",
-    progress: 0,
-    tasks: [
-      { id: "task24", name: "Write unit tests for frontend components", completed: false, priority: "medium" },
-      { id: "task25", name: "Create API integration tests", completed: false, priority: "medium" },
-      { id: "task26", name: "Perform end-to-end testing", completed: false, priority: "high" },
-      { id: "task27", name: "Conduct performance testing", completed: false, priority: "low" },
-      { id: "task28", name: "Run security vulnerability scans", completed: false, priority: "high" },
-    ],
-  },
-];
+import { useProject } from "@/hooks/useProject";
+import { useChecklistItems } from "@/hooks/useChecklistItems";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function ProjectDetails() {
-  const { projectId } = useParams();
+  const { projectId } = useParams<{projectId: string}>();
+  const navigate = useNavigate();
   const [filter, setFilter] = useState("all"); // all, incomplete, completed
-  const [openCategories, setOpenCategories] = useState<string[]>(["setup", "auth"]);
+  const [openCategories, setOpenCategories] = useState<string[]>([]);
+  const [newChecklistTitle, setNewChecklistTitle] = useState("");
+  const [newItemText, setNewItemText] = useState("");
+  const [addingChecklistItem, setAddingChecklistItem] = useState<string | null>(null);
+  const [isAddingChecklist, setIsAddingChecklist] = useState(false);
+  const [isDeletingProject, setIsDeletingProject] = useState(false);
+
+  const {
+    project,
+    isLoading,
+    error,
+    checklists,
+    updateProject,
+    deleteProject,
+    createChecklist,
+    deleteChecklist
+  } = useProject(projectId);
+
+  const { 
+    createItem,
+    toggleItemStatus,
+    deleteItem
+  } = useChecklistItems();
+
+  useEffect(() => {
+    // Abrir as duas primeiras categorias por padrão quando carregadas
+    if (checklists && checklists.length > 0 && openCategories.length === 0) {
+      const initialOpenCategories = checklists
+        .slice(0, 2)
+        .map(checklist => checklist.id);
+      setOpenCategories(initialOpenCategories);
+    }
+  }, [checklists]);
 
   const toggleCategory = (categoryId: string) => {
     if (openCategories.includes(categoryId)) {
@@ -105,28 +99,122 @@ export default function ProjectDetails() {
     }
   };
 
-  const handleTaskChange = (taskId: string, completed: boolean) => {
-    // In a real app, this would update state and persist the change
-    console.log("Task", taskId, "changed to", completed);
+  const handleTaskChange = async (taskId: string, checked: boolean) => {
+    try {
+      await toggleItemStatus.mutateAsync({ id: taskId, checked });
+    } catch (error) {
+      console.error("Erro ao alterar status da tarefa:", error);
+      toast.error("Erro ao alterar status da tarefa");
+    }
   };
 
-  // Calculate overall progress
-  const totalTasks = checklistCategories.reduce((acc, category) => acc + category.tasks.length, 0);
-  const completedTasks = checklistCategories.reduce(
-    (acc, category) => acc + category.tasks.filter(task => task.completed).length, 
-    0
-  );
-  const overallProgress = Math.round((completedTasks / totalTasks) * 100);
+  const handleCreateChecklist = async () => {
+    if (!newChecklistTitle.trim() || !projectId) return;
+    
+    try {
+      setIsAddingChecklist(true);
+      await createChecklist.mutateAsync({ 
+        projectId,
+        title: newChecklistTitle 
+      });
+      setNewChecklistTitle("");
+      toast.success("Checklist criado com sucesso");
+    } catch (error) {
+      console.error("Erro ao criar checklist:", error);
+      toast.error("Erro ao criar checklist");
+    } finally {
+      setIsAddingChecklist(false);
+    }
+  };
 
-  const filteredCategories = checklistCategories.map(category => ({
-    ...category,
-    tasks: category.tasks.filter(task => {
+  const handleCreateItem = async (checklistId: string) => {
+    if (!newItemText.trim()) return;
+    
+    try {
+      await createItem.mutateAsync({ 
+        checklistId, 
+        description: newItemText 
+      });
+      setNewItemText("");
+      toast.success("Item adicionado ao checklist");
+    } catch (error) {
+      console.error("Erro ao adicionar item:", error);
+      toast.error("Erro ao adicionar item ao checklist");
+    } finally {
+      setAddingChecklistItem(null);
+    }
+  };
+
+  const handleDeleteProject = async () => {
+    if (!projectId) return;
+    
+    try {
+      setIsDeletingProject(true);
+      await deleteProject.mutateAsync(projectId);
+      toast.success("Projeto excluído com sucesso");
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Erro ao excluir projeto:", error);
+      toast.error("Erro ao excluir projeto");
+    } finally {
+      setIsDeletingProject(false);
+    }
+  };
+
+  // Exibe mensagem de carregamento
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <div className="container py-8 animate-fade-in">
+          <div className="flex flex-col items-center justify-center h-[60vh]">
+            <Loader2 className="w-10 h-10 animate-spin text-primary mb-4" />
+            <p className="text-muted-foreground">Carregando detalhes do projeto...</p>
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  // Exibe mensagem de erro
+  if (error || !project) {
+    return (
+      <MainLayout>
+        <div className="container py-8 animate-fade-in">
+          <div className="flex flex-col items-center justify-center h-[60vh]">
+            <AlertCircle className="w-10 h-10 text-destructive mb-4" />
+            <p className="text-destructive font-medium mb-1">Erro ao carregar projeto</p>
+            <p className="text-muted-foreground text-center max-w-md">
+              Não foi possível carregar os detalhes deste projeto. Verifique se o projeto existe e se você tem permissão para acessá-lo.
+            </p>
+            <Button className="mt-6" onClick={() => navigate("/dashboard")}>
+              Voltar para o Dashboard
+            </Button>
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  // Calcula estatísticas para o projeto
+  const allItems = checklists?.flatMap(c => c.checklist_items || []) || [];
+  const completedItems = allItems.filter(item => item.checked);
+  const totalItems = allItems.length;
+  const completedProgress = totalItems > 0 ? Math.round((completedItems.length / totalItems) * 100) : 0;
+  const completedChecklists = checklists?.filter(c => {
+    const items = c.checklist_items || [];
+    return items.length > 0 && items.every(item => item.checked);
+  }).length || 0;
+
+  // Filtra checklists baseado no filtro selecionado
+  const filteredChecklists = checklists?.map(checklist => ({
+    ...checklist,
+    checklist_items: (checklist.checklist_items || []).filter(item => {
       if (filter === "all") return true;
-      if (filter === "incomplete") return !task.completed;
-      if (filter === "completed") return task.completed;
+      if (filter === "incomplete") return !item.checked;
+      if (filter === "completed") return item.checked;
       return true;
     }),
-  }));
+  })) || [];
 
   return (
     <MainLayout>
@@ -135,30 +223,63 @@ export default function ProjectDetails() {
           <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                <Link to="/" className="hover:text-foreground transition-colors">Dashboard</Link>
+                <Link to="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link>
                 <ChevronRight size={14} />
-                <Link to="/projects" className="hover:text-foreground transition-colors">Projects</Link>
-                <ChevronRight size={14} />
-                <span>{projectDetails.name}</span>
+                <span>{project.name}</span>
               </div>
-              <h1 className="text-3xl font-bold tracking-tight">{projectDetails.name}</h1>
+              <h1 className="text-3xl font-bold tracking-tight">{project.name}</h1>
               <p className="text-muted-foreground mt-1 max-w-2xl">
-                {projectDetails.description}
+                {project.description || "Sem descrição"}
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2 mt-4 lg:mt-0">
               <Button variant="outline" size="sm" className="gap-2">
                 <PenSquare size={16} />
-                <span className="hidden md:inline">Edit Project</span>
+                <span className="hidden md:inline">Editar Projeto</span>
               </Button>
               <Button variant="outline" size="sm" className="gap-2">
                 <RefreshCw size={16} />
-                <span className="hidden md:inline">Regenerate</span>
+                <span className="hidden md:inline">Regenerar</span>
               </Button>
               <Button variant="outline" size="sm" className="gap-2">
                 <Download size={16} />
-                <span className="hidden md:inline">Export</span>
+                <span className="hidden md:inline">Exportar</span>
               </Button>
+              
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" size="sm" className="gap-2">
+                    <Trash2 size={16} />
+                    <span className="hidden md:inline">Excluir</span>
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Esta ação não pode ser desfeita. Isso excluirá permanentemente seu projeto
+                      e todos os checklists associados.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction 
+                      className="bg-destructive hover:bg-destructive/90"
+                      onClick={handleDeleteProject}
+                      disabled={isDeletingProject}
+                    >
+                      {isDeletingProject ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Excluindo...
+                        </>
+                      ) : (
+                        'Excluir Projeto'
+                      )}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </div>
         </header>
@@ -167,54 +288,62 @@ export default function ProjectDetails() {
           <Card className="col-span-1 lg:col-span-2">
             <CardHeader className="pb-3">
               <CardTitle className="flex justify-between items-center">
-                Project Progress
+                Progresso do Projeto
                 <Badge variant="outline" className="ml-2 font-normal">
-                  {completedTasks}/{totalTasks} Tasks
+                  {completedItems.length}/{totalItems} Tarefas
                 </Badge>
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Overall Progress</span>
-                  <span className="font-medium">{overallProgress}%</span>
+                  <span className="text-muted-foreground">Progresso Geral</span>
+                  <span className="font-medium">{completedProgress}%</span>
                 </div>
-                <Progress value={overallProgress} className="h-2" />
+                <Progress value={completedProgress} className="h-2" />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
                 <div>
-                  <h3 className="text-sm font-medium text-muted-foreground mb-3">Categories</h3>
+                  <h3 className="text-sm font-medium text-muted-foreground mb-3">Categorias</h3>
                   <div className="space-y-3">
-                    {checklistCategories.map((category) => (
-                      <div key={category.id} className="text-sm flex items-center justify-between">
-                        <span>{category.name}</span>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs text-muted-foreground">
-                            {category.progress}%
-                          </span>
-                          <div className="w-16 h-1.5 bg-muted rounded-full overflow-hidden">
-                            <div 
-                              className="h-full bg-primary"
-                              style={{ width: `${category.progress}%` }}
-                            />
+                    {checklists?.map((checklist) => {
+                      const items = checklist.checklist_items || [];
+                      const completedCount = items.filter(item => item.checked).length;
+                      const progress = items.length > 0 
+                        ? Math.round((completedCount / items.length) * 100) 
+                        : 0;
+                        
+                      return (
+                        <div key={checklist.id} className="text-sm flex items-center justify-between">
+                          <span>{checklist.title}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-muted-foreground">
+                              {progress}%
+                            </span>
+                            <div className="w-16 h-1.5 bg-muted rounded-full overflow-hidden">
+                              <div 
+                                className="h-full bg-primary"
+                                style={{ width: `${progress}%` }}
+                              />
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
                 
                 <div>
-                  <h3 className="text-sm font-medium text-muted-foreground mb-3">Project Details</h3>
+                  <h3 className="text-sm font-medium text-muted-foreground mb-3">Detalhes do Projeto</h3>
                   <div className="space-y-3">
                     <div className="text-sm flex items-center gap-2">
-                      <Badge variant="outline">{projectDetails.type}</Badge>
+                      <Badge variant="outline">{project.type}</Badge>
                     </div>
                     
                     <div className="text-sm flex items-start gap-2">
                       <div className="flex flex-wrap gap-1">
-                        {projectDetails.technologies.map((tech) => (
+                        {project.technologies?.map((tech) => (
                           <Badge variant="secondary" key={tech} className="mr-1 mb-1">
                             {tech}
                           </Badge>
@@ -222,14 +351,16 @@ export default function ProjectDetails() {
                       </div>
                     </div>
                     
-                    <div className="text-sm flex items-center gap-2">
-                      <Calendar size={14} className="text-muted-foreground" />
-                      <span>Due: {new Date(projectDetails.deadline).toLocaleDateString()}</span>
-                    </div>
+                    {project.deadline && (
+                      <div className="text-sm flex items-center gap-2">
+                        <Calendar size={14} className="text-muted-foreground" />
+                        <span>Prazo: {new Date(project.deadline).toLocaleDateString()}</span>
+                      </div>
+                    )}
 
                     <div className="text-sm flex items-center gap-2">
                       <CheckCircle2 size={14} className="text-muted-foreground" />
-                      <span>Created: {new Date(projectDetails.createdAt).toLocaleDateString()}</span>
+                      <span>Criado: {new Date(project.created_at).toLocaleDateString()}</span>
                     </div>
                   </div>
                 </div>
@@ -239,18 +370,18 @@ export default function ProjectDetails() {
 
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle>Tasks Overview</CardTitle>
+              <CardTitle>Resumo das Tarefas</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-medium">
-                      {completedTasks}
+                      {completedItems.length}
                     </div>
                     <div className="text-sm">
-                      <div>Completed Tasks</div>
-                      <div className="text-muted-foreground">Nice work!</div>
+                      <div>Tarefas Concluídas</div>
+                      <div className="text-muted-foreground">Bom trabalho!</div>
                     </div>
                   </div>
                 </div>
@@ -260,11 +391,11 @@ export default function ProjectDetails() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center text-secondary-foreground font-medium">
-                      {totalTasks - completedTasks}
+                      {totalItems - completedItems.length}
                     </div>
                     <div className="text-sm">
-                      <div>Remaining Tasks</div>
-                      <div className="text-muted-foreground">Keep going!</div>
+                      <div>Tarefas Restantes</div>
+                      <div className="text-muted-foreground">Continue assim!</div>
                     </div>
                   </div>
                 </div>
@@ -274,12 +405,12 @@ export default function ProjectDetails() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground font-medium">
-                      {checklistCategories.filter(c => c.progress === 100).length}
+                      {completedChecklists}
                     </div>
                     <div className="text-sm">
-                      <div>Completed Categories</div>
+                      <div>Checklists Completos</div>
                       <div className="text-muted-foreground">
-                        {checklistCategories.length - checklistCategories.filter(c => c.progress === 100).length} remaining
+                        {(checklists?.length || 0) - completedChecklists} restantes
                       </div>
                     </div>
                   </div>
@@ -294,11 +425,11 @@ export default function ProjectDetails() {
             <TabsList className="mb-4">
               <TabsTrigger value="checklist" className="flex items-center gap-2">
                 <ClipboardCheck size={16} />
-                Checklist
+                Checklists
               </TabsTrigger>
               <TabsTrigger value="activity" className="flex items-center gap-2">
                 <SquarePen size={16} />
-                Activity
+                Atividade
               </TabsTrigger>
             </TabsList>
             
@@ -306,13 +437,15 @@ export default function ProjectDetails() {
               <Card>
                 <CardHeader className="pb-3">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <CardTitle>Project Checklist</CardTitle>
+                    <CardTitle>Checklists do Projeto</CardTitle>
                     <div className="flex items-center gap-2">
-                      <Button variant="outline" size="sm" onClick={() => setOpenCategories(checklistCategories.map(c => c.id))}>
-                        Expand All
+                      <Button variant="outline" size="sm" onClick={() => 
+                        setOpenCategories(checklists?.map(c => c.id) || [])
+                      }>
+                        Expandir Todos
                       </Button>
                       <Button variant="outline" size="sm" onClick={() => setOpenCategories([])}>
-                        Collapse All
+                        Recolher Todos
                       </Button>
                       <Button variant="outline" size="sm" className="flex items-center gap-2">
                         <Filter size={14} />
@@ -321,9 +454,9 @@ export default function ProjectDetails() {
                           value={filter}
                           onChange={(e) => setFilter(e.target.value)}
                         >
-                          <option value="all">All Tasks</option>
-                          <option value="incomplete">Incomplete</option>
-                          <option value="completed">Completed</option>
+                          <option value="all">Todas Tarefas</option>
+                          <option value="incomplete">Pendentes</option>
+                          <option value="completed">Concluídas</option>
                         </select>
                       </Button>
                     </div>
@@ -331,97 +464,180 @@ export default function ProjectDetails() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {filteredCategories.map((category) => (
-                      <Collapsible 
-                        key={category.id} 
-                        open={openCategories.includes(category.id)}
-                        className="border rounded-md"
-                      >
-                        <CollapsibleTrigger asChild>
-                          <div 
-                            className="flex items-center justify-between p-4 cursor-pointer hover:bg-muted/50"
-                            onClick={() => toggleCategory(category.id)}
-                          >
-                            <div className="flex items-center gap-3">
-                              <ChevronDown 
-                                className={cn(
-                                  "h-5 w-5 text-muted-foreground transition-transform",
-                                  openCategories.includes(category.id) ? "transform rotate-0" : "transform rotate-[-90deg]"
-                                )}
-                              />
-                              <div>
-                                <h3 className="font-medium">{category.name}</h3>
-                                <div className="text-sm text-muted-foreground">
-                                  {category.tasks.filter(t => t.completed).length}/{category.tasks.length} tasks completed
-                                </div>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <div className="text-sm font-medium">{category.progress}%</div>
-                              <div className="w-20 h-1.5 bg-muted rounded-full overflow-hidden">
-                                <div 
+                    {filteredChecklists?.map((checklist) => {
+                      const totalItems = checklist.checklist_items?.length || 0;
+                      const completedItems = checklist.checklist_items?.filter(item => item.checked).length || 0;
+                      const progress = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+                      
+                      return (
+                        <Collapsible 
+                          key={checklist.id} 
+                          open={openCategories.includes(checklist.id)}
+                          className="border rounded-md"
+                        >
+                          <CollapsibleTrigger asChild>
+                            <div 
+                              className="flex items-center justify-between p-4 cursor-pointer hover:bg-muted/50"
+                              onClick={() => toggleCategory(checklist.id)}
+                            >
+                              <div className="flex items-center gap-3">
+                                <ChevronDown 
                                   className={cn(
-                                    "h-full transition-all",
-                                    category.progress === 100 ? "bg-success" : "bg-primary"
+                                    "h-5 w-5 text-muted-foreground transition-transform",
+                                    openCategories.includes(checklist.id) ? "transform rotate-0" : "transform rotate-[-90deg]"
                                   )}
-                                  style={{ width: `${category.progress}%` }}
                                 />
-                              </div>
-                            </div>
-                          </div>
-                        </CollapsibleTrigger>
-                        
-                        <CollapsibleContent>
-                          <div className="px-4 pb-4">
-                            <Separator className="mb-4" />
-                            <div className="space-y-3">
-                              {category.tasks.map((task) => (
-                                <div key={task.id} className="flex items-start gap-3">
-                                  <Checkbox 
-                                    id={task.id} 
-                                    checked={task.completed}
-                                    onCheckedChange={(checked) => 
-                                      handleTaskChange(task.id, checked as boolean)
-                                    }
-                                    className="mt-0.5"
-                                  />
-                                  <div className="flex-1">
-                                    <label
-                                      htmlFor={task.id}
-                                      className={cn(
-                                        "text-sm font-medium cursor-pointer",
-                                        task.completed && "line-through text-muted-foreground"
-                                      )}
-                                    >
-                                      {task.name}
-                                    </label>
-                                    <div className="flex items-center gap-2 mt-1">
-                                      <Badge 
-                                        variant="outline" 
-                                        className={cn(
-                                          "text-xs",
-                                          task.priority === "high" && "bg-destructive/10 text-destructive border-destructive/20",
-                                          task.priority === "medium" && "bg-warning/10 text-warning border-warning/20",
-                                          task.priority === "low" && "bg-muted text-muted-foreground"
-                                        )}
-                                      >
-                                        {task.priority} priority
-                                      </Badge>
-                                    </div>
+                                <div>
+                                  <h3 className="font-medium">{checklist.title}</h3>
+                                  <div className="text-sm text-muted-foreground">
+                                    {completedItems}/{totalItems} tarefas concluídas
                                   </div>
                                 </div>
-                              ))}
-                              
-                              {category.tasks.length === 0 && (
-                                <div className="text-sm text-muted-foreground text-center py-2">
-                                  No tasks match the current filter
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <div className="text-sm font-medium">{progress}%</div>
+                                <div className="w-20 h-1.5 bg-muted rounded-full overflow-hidden">
+                                  <div 
+                                    className={cn(
+                                      "h-full transition-all",
+                                      progress === 100 ? "bg-success" : "bg-primary"
+                                    )}
+                                    style={{ width: `${progress}%` }}
+                                  />
                                 </div>
-                              )}
+                              </div>
                             </div>
+                          </CollapsibleTrigger>
+                          
+                          <CollapsibleContent>
+                            <div className="px-4 pb-4">
+                              <Separator className="mb-4" />
+                              <div className="space-y-3">
+                                {checklist.checklist_items?.map((item) => (
+                                  <div key={item.id} className="flex items-start gap-3">
+                                    <Checkbox 
+                                      id={item.id} 
+                                      checked={item.checked}
+                                      onCheckedChange={(checked) => 
+                                        handleTaskChange(item.id, checked as boolean)
+                                      }
+                                      className="mt-0.5"
+                                    />
+                                    <div className="flex-1">
+                                      <label
+                                        htmlFor={item.id}
+                                        className={cn(
+                                          "text-sm font-medium cursor-pointer",
+                                          item.checked && "line-through text-muted-foreground"
+                                        )}
+                                      >
+                                        {item.description}
+                                      </label>
+                                    </div>
+                                  </div>
+                                ))}
+                                
+                                {checklist.checklist_items?.length === 0 && (
+                                  <div className="text-sm text-muted-foreground text-center py-2">
+                                    Nenhuma tarefa encontrada para este critério
+                                  </div>
+                                )}
+                                
+                                {addingChecklistItem === checklist.id ? (
+                                  <div className="flex items-center gap-2 mt-4">
+                                    <Input
+                                      type="text"
+                                      placeholder="Descrição da nova tarefa"
+                                      value={newItemText}
+                                      onChange={(e) => setNewItemText(e.target.value)}
+                                      className="flex-1"
+                                    />
+                                    <Button 
+                                      size="sm" 
+                                      onClick={() => handleCreateItem(checklist.id)}
+                                      disabled={!newItemText.trim()}
+                                    >
+                                      Adicionar
+                                    </Button>
+                                    <Button 
+                                      size="sm" 
+                                      variant="outline" 
+                                      onClick={() => setAddingChecklistItem(null)}
+                                    >
+                                      Cancelar
+                                    </Button>
+                                  </div>
+                                ) : (
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm"
+                                    className="mt-3 w-full justify-start text-muted-foreground"
+                                    onClick={() => setAddingChecklistItem(checklist.id)}
+                                  >
+                                    <Plus size={16} className="mr-2" />
+                                    Adicionar tarefa
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          </CollapsibleContent>
+                        </Collapsible>
+                      );
+                    })}
+                    
+                    {filteredChecklists?.length === 0 && (
+                      <div className="text-center py-8 text-muted-foreground">
+                        Nenhum checklist encontrado. Crie seu primeiro checklist!
+                      </div>
+                    )}
+                    
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button className="w-full" variant="outline">
+                          <Plus size={16} className="mr-2" />
+                          Adicionar novo checklist
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Criar novo checklist</DialogTitle>
+                          <DialogDescription>
+                            Dê um título para o novo checklist e adicione tarefas a ele.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4 py-4">
+                          <div className="space-y-2">
+                            <label htmlFor="title" className="text-sm font-medium">
+                              Título do checklist
+                            </label>
+                            <Input
+                              id="title"
+                              placeholder="Ex: Requisitos funcionais"
+                              value={newChecklistTitle}
+                              onChange={(e) => setNewChecklistTitle(e.target.value)}
+                            />
                           </div>
-                        </CollapsibleContent>
-                      </Collapsible>
-                    ))}
+                        </div>
+                        <DialogFooter>
+                          <DialogClose asChild>
+                            <Button variant="outline">Cancelar</Button>
+                          </DialogClose>
+                          <Button 
+                            onClick={handleCreateChecklist} 
+                            disabled={!newChecklistTitle.trim() || isAddingChecklist}
+                          >
+                            {isAddingChecklist ? (
+                              <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Criando...
+                              </>
+                            ) : (
+                              'Criar checklist'
+                            )}
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 </CardContent>
               </Card>
@@ -430,11 +646,11 @@ export default function ProjectDetails() {
             <TabsContent value="activity">
               <Card>
                 <CardHeader>
-                  <CardTitle>Activity Log</CardTitle>
+                  <CardTitle>Registro de Atividades</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="text-muted-foreground text-sm">
-                    Activity log will be available soon.
+                    Registro de atividades estará disponível em breve.
                   </div>
                 </CardContent>
               </Card>
