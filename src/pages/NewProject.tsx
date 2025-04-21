@@ -57,9 +57,6 @@ export default function NewProject() {
       const { data, error } = await supabase.functions.invoke("generate-checklist-anthropic", {
         method: "POST",
         body: { project: projectDetails },
-        headers: {
-          "Content-Type": "application/json",
-        },
       });
       
       console.log("Resposta da função:", data, error);

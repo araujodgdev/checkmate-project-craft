@@ -2,8 +2,9 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const headers = {
+const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Content-Type': 'application/json'
 };
@@ -11,7 +12,7 @@ const headers = {
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response('ok', { headers });
+    return new Response('ok', { headers: corsHeaders });
   }
 
   try {
@@ -26,7 +27,7 @@ serve(async (req) => {
           error: "Empty request body received" 
         }), {
           status: 400,
-          headers,
+          headers: corsHeaders,
         });
       }
       
@@ -38,7 +39,7 @@ serve(async (req) => {
         details: parseError.message 
       }), {
         status: 400,
-        headers,
+        headers: corsHeaders,
       });
     }
 
@@ -52,7 +53,7 @@ serve(async (req) => {
         received: JSON.stringify(jsonBody)
       }), {
         status: 400,
-        headers,
+        headers: corsHeaders,
       });
     }
 
@@ -81,7 +82,7 @@ CHECKLIST:
     if (!apiKey) {
       return new Response(JSON.stringify({ error: "Faltando ANTHROPIC_API_KEY." }), {
         status: 400,
-        headers,
+        headers: corsHeaders,
       });
     }
 
@@ -122,7 +123,7 @@ CHECKLIST:
         details: errorDetail 
       }), {
         status: 500,
-        headers,
+        headers: corsHeaders,
       });
     }
 
@@ -136,7 +137,7 @@ CHECKLIST:
         details: parseError.message
       }), {
         status: 500,
-        headers,
+        headers: corsHeaders,
       });
     }
 
@@ -160,7 +161,7 @@ CHECKLIST:
     }
 
     return new Response(JSON.stringify({ checklist: items }), {
-      headers,
+      headers: corsHeaders,
     });
   } catch (error) {
     console.error("Unexpected error:", error);
@@ -169,7 +170,7 @@ CHECKLIST:
       stack: error?.stack
     }), {
       status: 500,
-      headers,
+      headers: corsHeaders,
     });
   }
 });
