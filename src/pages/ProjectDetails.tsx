@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { MainLayout } from "@/components/layouts/main-layout";
 import { Button } from "@/components/ui/button";
@@ -7,22 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { 
-  Calendar, 
-  CheckCircle2, 
-  ChevronDown, 
-  ChevronRight, 
-  ClipboardCheck, 
-  Download, 
-  Filter, 
-  PenSquare, 
-  RefreshCw, 
-  SquarePen,
-  Plus,
-  Trash2,
-  Loader2,
-  AlertCircle
-} from "lucide-react";
+import { Calendar, CheckCircle2, ChevronDown, ChevronRight, ClipboardCheck, Download, Filter, PenSquare, RefreshCw, SquarePen, Plus, Trash2, Loader2, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -31,30 +15,14 @@ import { useProject } from "@/hooks/useProject";
 import { useChecklistItems } from "@/hooks/useChecklistItems";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogClose,
-} from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 export default function ProjectDetails() {
-  const { projectId } = useParams<{projectId: string}>();
+  const {
+    projectId
+  } = useParams<{
+    projectId: string;
+  }>();
   const navigate = useNavigate();
   const [filter, setFilter] = useState("all"); // all, incomplete, completed
   const [openCategories, setOpenCategories] = useState<string[]>([]);
@@ -63,7 +31,6 @@ export default function ProjectDetails() {
   const [addingChecklistItem, setAddingChecklistItem] = useState<string | null>(null);
   const [isAddingChecklist, setIsAddingChecklist] = useState(false);
   const [isDeletingProject, setIsDeletingProject] = useState(false);
-
   const {
     project,
     isLoading,
@@ -74,23 +41,18 @@ export default function ProjectDetails() {
     createChecklist,
     deleteChecklist
   } = useProject(projectId);
-
-  const { 
+  const {
     createItem,
     toggleItemStatus,
     deleteItem
   } = useChecklistItems();
-
   useEffect(() => {
     // Abrir as duas primeiras categorias por padrão quando carregadas
     if (checklists && checklists.length > 0 && openCategories.length === 0) {
-      const initialOpenCategories = checklists
-        .slice(0, 2)
-        .map(checklist => checklist.id);
+      const initialOpenCategories = checklists.slice(0, 2).map(checklist => checklist.id);
       setOpenCategories(initialOpenCategories);
     }
   }, [checklists]);
-
   const toggleCategory = (categoryId: string) => {
     if (openCategories.includes(categoryId)) {
       setOpenCategories(openCategories.filter(id => id !== categoryId));
@@ -98,24 +60,24 @@ export default function ProjectDetails() {
       setOpenCategories([...openCategories, categoryId]);
     }
   };
-
   const handleTaskChange = async (taskId: string, checked: boolean) => {
     try {
-      await toggleItemStatus.mutateAsync({ id: taskId, checked });
+      await toggleItemStatus.mutateAsync({
+        id: taskId,
+        checked
+      });
     } catch (error) {
       console.error("Erro ao alterar status da tarefa:", error);
       toast.error("Erro ao alterar status da tarefa");
     }
   };
-
   const handleCreateChecklist = async () => {
     if (!newChecklistTitle.trim() || !projectId) return;
-    
     try {
       setIsAddingChecklist(true);
-      await createChecklist.mutateAsync({ 
+      await createChecklist.mutateAsync({
         projectId,
-        title: newChecklistTitle 
+        title: newChecklistTitle
       });
       setNewChecklistTitle("");
       toast.success("Checklist criado com sucesso");
@@ -126,14 +88,12 @@ export default function ProjectDetails() {
       setIsAddingChecklist(false);
     }
   };
-
   const handleCreateItem = async (checklistId: string) => {
     if (!newItemText.trim()) return;
-    
     try {
-      await createItem.mutateAsync({ 
-        checklistId, 
-        description: newItemText 
+      await createItem.mutateAsync({
+        checklistId,
+        description: newItemText
       });
       setNewItemText("");
       toast.success("Item adicionado ao checklist");
@@ -144,10 +104,8 @@ export default function ProjectDetails() {
       setAddingChecklistItem(null);
     }
   };
-
   const handleDeleteProject = async () => {
     if (!projectId) return;
-    
     try {
       setIsDeletingProject(true);
       await deleteProject.mutateAsync(projectId);
@@ -163,22 +121,19 @@ export default function ProjectDetails() {
 
   // Exibe mensagem de carregamento
   if (isLoading) {
-    return (
-      <MainLayout>
+    return <MainLayout>
         <div className="container py-8 animate-fade-in">
           <div className="flex flex-col items-center justify-center h-[60vh]">
             <Loader2 className="w-10 h-10 animate-spin text-primary mb-4" />
             <p className="text-muted-foreground">Carregando detalhes do projeto...</p>
           </div>
         </div>
-      </MainLayout>
-    );
+      </MainLayout>;
   }
 
   // Exibe mensagem de erro
   if (error || !project) {
-    return (
-      <MainLayout>
+    return <MainLayout>
         <div className="container py-8 animate-fade-in">
           <div className="flex flex-col items-center justify-center h-[60vh]">
             <AlertCircle className="w-10 h-10 text-destructive mb-4" />
@@ -191,15 +146,14 @@ export default function ProjectDetails() {
             </Button>
           </div>
         </div>
-      </MainLayout>
-    );
+      </MainLayout>;
   }
 
   // Calcula estatísticas para o projeto
   const allItems = checklists?.flatMap(c => c.checklist_items || []) || [];
   const completedItems = allItems.filter(item => item.checked);
   const totalItems = allItems.length;
-  const completedProgress = totalItems > 0 ? Math.round((completedItems.length / totalItems) * 100) : 0;
+  const completedProgress = totalItems > 0 ? Math.round(completedItems.length / totalItems * 100) : 0;
   const completedChecklists = checklists?.filter(c => {
     const items = c.checklist_items || [];
     return items.length > 0 && items.every(item => item.checked);
@@ -213,11 +167,9 @@ export default function ProjectDetails() {
       if (filter === "incomplete") return !item.checked;
       if (filter === "completed") return item.checked;
       return true;
-    }),
+    })
   })) || [];
-
-  return (
-    <MainLayout>
+  return <MainLayout>
       <div className="container py-8 animate-fade-in">
         <header className="mb-8">
           <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
@@ -237,10 +189,7 @@ export default function ProjectDetails() {
                 <PenSquare size={16} />
                 <span className="hidden md:inline">Editar Projeto</span>
               </Button>
-              <Button variant="outline" size="sm" className="gap-2">
-                <RefreshCw size={16} />
-                <span className="hidden md:inline">Regenerar</span>
-              </Button>
+              
               <Button variant="outline" size="sm" className="gap-2">
                 <Download size={16} />
                 <span className="hidden md:inline">Exportar</span>
@@ -263,19 +212,11 @@ export default function ProjectDetails() {
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction 
-                      className="bg-destructive hover:bg-destructive/90"
-                      onClick={handleDeleteProject}
-                      disabled={isDeletingProject}
-                    >
-                      {isDeletingProject ? (
-                        <>
+                    <AlertDialogAction className="bg-destructive hover:bg-destructive/90" onClick={handleDeleteProject} disabled={isDeletingProject}>
+                      {isDeletingProject ? <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                           Excluindo...
-                        </>
-                      ) : (
-                        'Excluir Projeto'
-                      )}
+                        </> : 'Excluir Projeto'}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -307,30 +248,24 @@ export default function ProjectDetails() {
                 <div>
                   <h3 className="text-sm font-medium text-muted-foreground mb-3">Categorias</h3>
                   <div className="space-y-3">
-                    {checklists?.map((checklist) => {
-                      const items = checklist.checklist_items || [];
-                      const completedCount = items.filter(item => item.checked).length;
-                      const progress = items.length > 0 
-                        ? Math.round((completedCount / items.length) * 100) 
-                        : 0;
-                        
-                      return (
-                        <div key={checklist.id} className="text-sm flex items-center justify-between">
+                    {checklists?.map(checklist => {
+                    const items = checklist.checklist_items || [];
+                    const completedCount = items.filter(item => item.checked).length;
+                    const progress = items.length > 0 ? Math.round(completedCount / items.length * 100) : 0;
+                    return <div key={checklist.id} className="text-sm flex items-center justify-between">
                           <span>{checklist.title}</span>
                           <div className="flex items-center gap-2">
                             <span className="text-xs text-muted-foreground">
                               {progress}%
                             </span>
                             <div className="w-16 h-1.5 bg-muted rounded-full overflow-hidden">
-                              <div 
-                                className="h-full bg-primary"
-                                style={{ width: `${progress}%` }}
-                              />
+                              <div className="h-full bg-primary" style={{
+                            width: `${progress}%`
+                          }} />
                             </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        </div>;
+                  })}
                   </div>
                 </div>
                 
@@ -343,20 +278,16 @@ export default function ProjectDetails() {
                     
                     <div className="text-sm flex items-start gap-2">
                       <div className="flex flex-wrap gap-1">
-                        {project.technologies?.map((tech) => (
-                          <Badge variant="secondary" key={tech} className="mr-1 mb-1">
+                        {project.technologies?.map(tech => <Badge variant="secondary" key={tech} className="mr-1 mb-1">
                             {tech}
-                          </Badge>
-                        ))}
+                          </Badge>)}
                       </div>
                     </div>
                     
-                    {project.deadline && (
-                      <div className="text-sm flex items-center gap-2">
+                    {project.deadline && <div className="text-sm flex items-center gap-2">
                         <Calendar size={14} className="text-muted-foreground" />
                         <span>Prazo: {new Date(project.deadline).toLocaleDateString()}</span>
-                      </div>
-                    )}
+                      </div>}
 
                     <div className="text-sm flex items-center gap-2">
                       <CheckCircle2 size={14} className="text-muted-foreground" />
@@ -439,9 +370,7 @@ export default function ProjectDetails() {
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <CardTitle>Checklists do Projeto</CardTitle>
                     <div className="flex items-center gap-2">
-                      <Button variant="outline" size="sm" onClick={() => 
-                        setOpenCategories(checklists?.map(c => c.id) || [])
-                      }>
+                      <Button variant="outline" size="sm" onClick={() => setOpenCategories(checklists?.map(c => c.id) || [])}>
                         Expandir Todos
                       </Button>
                       <Button variant="outline" size="sm" onClick={() => setOpenCategories([])}>
@@ -449,11 +378,7 @@ export default function ProjectDetails() {
                       </Button>
                       <Button variant="outline" size="sm" className="flex items-center gap-2">
                         <Filter size={14} />
-                        <select 
-                          className="bg-transparent outline-none"
-                          value={filter}
-                          onChange={(e) => setFilter(e.target.value)}
-                        >
+                        <select className="bg-transparent outline-none" value={filter} onChange={e => setFilter(e.target.value)}>
                           <option value="all">Todas Tarefas</option>
                           <option value="incomplete">Pendentes</option>
                           <option value="completed">Concluídas</option>
@@ -464,29 +389,15 @@ export default function ProjectDetails() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {filteredChecklists?.map((checklist) => {
-                      const totalItems = checklist.checklist_items?.length || 0;
-                      const completedItems = checklist.checklist_items?.filter(item => item.checked).length || 0;
-                      const progress = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
-                      
-                      return (
-                        <Collapsible 
-                          key={checklist.id} 
-                          open={openCategories.includes(checklist.id)}
-                          className="border rounded-md"
-                        >
+                    {filteredChecklists?.map(checklist => {
+                    const totalItems = checklist.checklist_items?.length || 0;
+                    const completedItems = checklist.checklist_items?.filter(item => item.checked).length || 0;
+                    const progress = totalItems > 0 ? Math.round(completedItems / totalItems * 100) : 0;
+                    return <Collapsible key={checklist.id} open={openCategories.includes(checklist.id)} className="border rounded-md">
                           <CollapsibleTrigger asChild>
-                            <div 
-                              className="flex items-center justify-between p-4 cursor-pointer hover:bg-muted/50"
-                              onClick={() => toggleCategory(checklist.id)}
-                            >
+                            <div className="flex items-center justify-between p-4 cursor-pointer hover:bg-muted/50" onClick={() => toggleCategory(checklist.id)}>
                               <div className="flex items-center gap-3">
-                                <ChevronDown 
-                                  className={cn(
-                                    "h-5 w-5 text-muted-foreground transition-transform",
-                                    openCategories.includes(checklist.id) ? "transform rotate-0" : "transform rotate-[-90deg]"
-                                  )}
-                                />
+                                <ChevronDown className={cn("h-5 w-5 text-muted-foreground transition-transform", openCategories.includes(checklist.id) ? "transform rotate-0" : "transform rotate-[-90deg]")} />
                                 <div>
                                   <h3 className="font-medium">{checklist.title}</h3>
                                   <div className="text-sm text-muted-foreground">
@@ -497,13 +408,9 @@ export default function ProjectDetails() {
                               <div className="flex items-center gap-3">
                                 <div className="text-sm font-medium">{progress}%</div>
                                 <div className="w-20 h-1.5 bg-muted rounded-full overflow-hidden">
-                                  <div 
-                                    className={cn(
-                                      "h-full transition-all",
-                                      progress === 100 ? "bg-success" : "bg-primary"
-                                    )}
-                                    style={{ width: `${progress}%` }}
-                                  />
+                                  <div className={cn("h-full transition-all", progress === 100 ? "bg-success" : "bg-primary")} style={{
+                                width: `${progress}%`
+                              }} />
                                 </div>
                               </div>
                             </div>
@@ -513,83 +420,40 @@ export default function ProjectDetails() {
                             <div className="px-4 pb-4">
                               <Separator className="mb-4" />
                               <div className="space-y-3">
-                                {checklist.checklist_items?.map((item) => (
-                                  <div key={item.id} className="flex items-start gap-3">
-                                    <Checkbox 
-                                      id={item.id} 
-                                      checked={item.checked}
-                                      onCheckedChange={(checked) => 
-                                        handleTaskChange(item.id, checked as boolean)
-                                      }
-                                      className="mt-0.5"
-                                    />
+                                {checklist.checklist_items?.map(item => <div key={item.id} className="flex items-start gap-3">
+                                    <Checkbox id={item.id} checked={item.checked} onCheckedChange={checked => handleTaskChange(item.id, checked as boolean)} className="mt-0.5" />
                                     <div className="flex-1">
-                                      <label
-                                        htmlFor={item.id}
-                                        className={cn(
-                                          "text-sm font-medium cursor-pointer",
-                                          item.checked && "line-through text-muted-foreground"
-                                        )}
-                                      >
+                                      <label htmlFor={item.id} className={cn("text-sm font-medium cursor-pointer", item.checked && "line-through text-muted-foreground")}>
                                         {item.description}
                                       </label>
                                     </div>
-                                  </div>
-                                ))}
+                                  </div>)}
                                 
-                                {checklist.checklist_items?.length === 0 && (
-                                  <div className="text-sm text-muted-foreground text-center py-2">
+                                {checklist.checklist_items?.length === 0 && <div className="text-sm text-muted-foreground text-center py-2">
                                     Nenhuma tarefa encontrada para este critério
-                                  </div>
-                                )}
+                                  </div>}
                                 
-                                {addingChecklistItem === checklist.id ? (
-                                  <div className="flex items-center gap-2 mt-4">
-                                    <Input
-                                      type="text"
-                                      placeholder="Descrição da nova tarefa"
-                                      value={newItemText}
-                                      onChange={(e) => setNewItemText(e.target.value)}
-                                      className="flex-1"
-                                    />
-                                    <Button 
-                                      size="sm" 
-                                      onClick={() => handleCreateItem(checklist.id)}
-                                      disabled={!newItemText.trim()}
-                                    >
+                                {addingChecklistItem === checklist.id ? <div className="flex items-center gap-2 mt-4">
+                                    <Input type="text" placeholder="Descrição da nova tarefa" value={newItemText} onChange={e => setNewItemText(e.target.value)} className="flex-1" />
+                                    <Button size="sm" onClick={() => handleCreateItem(checklist.id)} disabled={!newItemText.trim()}>
                                       Adicionar
                                     </Button>
-                                    <Button 
-                                      size="sm" 
-                                      variant="outline" 
-                                      onClick={() => setAddingChecklistItem(null)}
-                                    >
+                                    <Button size="sm" variant="outline" onClick={() => setAddingChecklistItem(null)}>
                                       Cancelar
                                     </Button>
-                                  </div>
-                                ) : (
-                                  <Button 
-                                    variant="ghost" 
-                                    size="sm"
-                                    className="mt-3 w-full justify-start text-muted-foreground"
-                                    onClick={() => setAddingChecklistItem(checklist.id)}
-                                  >
+                                  </div> : <Button variant="ghost" size="sm" className="mt-3 w-full justify-start text-muted-foreground" onClick={() => setAddingChecklistItem(checklist.id)}>
                                     <Plus size={16} className="mr-2" />
                                     Adicionar tarefa
-                                  </Button>
-                                )}
+                                  </Button>}
                               </div>
                             </div>
                           </CollapsibleContent>
-                        </Collapsible>
-                      );
-                    })}
+                        </Collapsible>;
+                  })}
                     
-                    {filteredChecklists?.length === 0 && (
-                      <div className="text-center py-8 text-muted-foreground">
+                    {filteredChecklists?.length === 0 && <div className="text-center py-8 text-muted-foreground">
                         Nenhum checklist encontrado. Crie seu primeiro checklist!
-                      </div>
-                    )}
+                      </div>}
                     
                     <Dialog>
                       <DialogTrigger asChild>
@@ -610,30 +474,18 @@ export default function ProjectDetails() {
                             <label htmlFor="title" className="text-sm font-medium">
                               Título do checklist
                             </label>
-                            <Input
-                              id="title"
-                              placeholder="Ex: Requisitos funcionais"
-                              value={newChecklistTitle}
-                              onChange={(e) => setNewChecklistTitle(e.target.value)}
-                            />
+                            <Input id="title" placeholder="Ex: Requisitos funcionais" value={newChecklistTitle} onChange={e => setNewChecklistTitle(e.target.value)} />
                           </div>
                         </div>
                         <DialogFooter>
                           <DialogClose asChild>
                             <Button variant="outline">Cancelar</Button>
                           </DialogClose>
-                          <Button 
-                            onClick={handleCreateChecklist} 
-                            disabled={!newChecklistTitle.trim() || isAddingChecklist}
-                          >
-                            {isAddingChecklist ? (
-                              <>
+                          <Button onClick={handleCreateChecklist} disabled={!newChecklistTitle.trim() || isAddingChecklist}>
+                            {isAddingChecklist ? <>
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                 Criando...
-                              </>
-                            ) : (
-                              'Criar checklist'
-                            )}
+                              </> : 'Criar checklist'}
                           </Button>
                         </DialogFooter>
                       </DialogContent>
@@ -658,6 +510,5 @@ export default function ProjectDetails() {
           </Tabs>
         </div>
       </div>
-    </MainLayout>
-  );
+    </MainLayout>;
 }
