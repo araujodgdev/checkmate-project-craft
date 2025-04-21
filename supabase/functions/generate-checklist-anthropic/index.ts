@@ -56,7 +56,7 @@ CHECKLIST:
     }
 
     const anthropicPayload = {
-      model: "claude-3.5-haiku-20240307",
+      model: "claude-3-5-haiku-20241022",
       max_tokens: 1024,
       temperature: 0.2,
       messages: [
