@@ -90,7 +90,7 @@ export function useNewProjectWizard(totalSteps = 3) {
             deadline: deadlineStr,
           };
 
-          // Aqui está a correção: chamar generateChecklist diretamente como uma função normal
+          // Corrigido: chamamos generateChecklist como uma função normal
           generatedChecklist = await generateChecklist(projectDetails);
         } catch (err: any) {
           toast.error("Erro ao gerar checklist automática", { 
