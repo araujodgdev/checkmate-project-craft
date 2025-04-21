@@ -15,7 +15,6 @@ import AuthPage from "@/pages/AuthPage";
 import ProjectDetails from "@/pages/ProjectDetails";
 import NewProject from "@/pages/NewProject";
 import NotFound from "@/pages/NotFound";
-import PublicProject from "@/pages/PublicProject";
 
 const queryClient = new QueryClient({
 	defaultOptions: {
@@ -69,7 +68,6 @@ const App = () => {
 									</ProtectedRoute>
 								}
 							/>
-							<Route path="/public/:projectId" element={<PublicProject />} />
 							<Route path="*" element={<NotFound />} />
 						</Routes>
 					</BrowserRouter>
