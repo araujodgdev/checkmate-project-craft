@@ -26,9 +26,9 @@ export default function ProjectDetails() {
     );
   }
 
-  const totalTasks = checklists.reduce((acc, checklist) => acc + checklist.items.length, 0);
+  const totalTasks = checklists.reduce((acc, checklist) => acc + (checklist.checklist_items?.length || 0), 0);
   const completedTasks = checklists.reduce(
-    (acc, checklist) => acc + checklist.items.filter(item => item.completed).length,
+    (acc, checklist) => acc + ((checklist.checklist_items || []).filter(item => item.checked).length || 0),
     0
   );
   const progressPercentage = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
@@ -39,8 +39,8 @@ export default function ProjectDetails() {
         if (checklist.id !== checklistId) return checklist;
         return {
           ...checklist,
-          items: checklist.items.map(item =>
-            item.id === itemId ? { ...item, completed: !item.completed } : item
+          checklist_items: (checklist.checklist_items || []).map(item =>
+            item.id === itemId ? { ...item, checked: !item.checked } : item
           ),
         };
       })
@@ -62,8 +62,8 @@ export default function ProjectDetails() {
         {checklists.map((checklist) => (
           <ProjectChecklist
             key={checklist.id}
-            checklistTitle={checklist.name}
-            items={checklist.items}
+            checklistTitle={checklist.title}
+            items={checklist.checklist_items || []}
             onToggleItem={(itemId) => handleToggleItem(checklist.id, itemId)}
           />
         ))}
