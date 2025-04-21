@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CheckCircle, ChevronLeft, ChevronRight, GripVertical, Home, List, LogOut, Settings, User } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useAuthStore } from "@/lib/store";
 
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
@@ -22,9 +23,11 @@ export function Sidebar() {
     { label: "Settings", icon: Settings, href: "/settings" },
   ];
 
-  const handleLogout = () => {
-    // Implement logout functionality here
-    console.log("Logging out...");
+  const { logout } = useAuthStore();
+
+  const handleLogout = async () => {
+    await logout();
+    window.location.href = "/auth"; // Redireciona para tela de login
   };
 
   const resize = useCallback((e: MouseEvent) => {

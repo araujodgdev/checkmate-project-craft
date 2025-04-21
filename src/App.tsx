@@ -16,6 +16,9 @@ import ProjectDetails from "@/pages/ProjectDetails";
 import NewProject from "@/pages/NewProject";
 import NotFound from "@/pages/NotFound";
 import PublicProject from "@/pages/PublicProject";
+import Settings from "@/pages/Settings";
+import Profile from "@/pages/Profile";
+import Projects from "@/pages/Projects";
 
 const queryClient = new QueryClient({
 	defaultOptions: {
@@ -49,9 +52,23 @@ const App = () => {
 								}
 							/>
 							<Route path="/auth" element={<AuthPage />} />
+              <Route path="/settings" element={
+                <ProtectedRoute>
+                  <Settings />
+                </ProtectedRoute>
+              } />
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              } />
 							<Route
 								path="/projects"
-								element={<Navigate to="/projects" replace />}
+								element={
+                  <ProtectedRoute>
+                    <Projects />
+                  </ProtectedRoute>
+                }
 							/>
 							<Route
 								path="/projects/:projectId"
