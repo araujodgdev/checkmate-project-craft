@@ -23,6 +23,7 @@ import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { useProjects } from "@/hooks/useProjects";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const projectTypes = [
   { value: "web", label: "Web Application" },
@@ -57,7 +58,19 @@ export default function NewProject() {
       setSelectedTechnologies([...selectedTechnologies, tech]);
     }
   };
-  
+
+  async function generateChecklistFromAnthropic(projectDetails: Record<string, any>) {
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-checklist-anthropic", {
+        body: { project: projectDetails },
+      });
+      if (error || !data?.checklist) throw new Error(error?.message ?? "Erro ao gerar checklist com IA");
+      return data.checklist as string[];
+    } catch (err: any) {
+      throw new Error("Falha IA: " + (err?.message || "Desconhecido"));
+    }
+  }
+
   const handleNext = async () => {
     if (step < totalSteps) {
       setStep(step + 1);
@@ -77,6 +90,9 @@ export default function NewProject() {
         const deadlineStr = deadline
           ? deadline.toISOString().split("T")[0]
           : undefined;
+        const objectives = (
+          document.getElementById("objectives") as HTMLTextAreaElement
+        )?.value;
 
         if (!projectName || !type || selectedTechnologies.length === 0) {
           toast.error("Preencha os campos obrigatórios.");
@@ -84,7 +100,23 @@ export default function NewProject() {
           return;
         }
 
-        await createProject.mutateAsync({
+        let generatedChecklist: string[] = [];
+        try {
+          generatedChecklist = await generateChecklistFromAnthropic({
+            name: projectName,
+            description,
+            type,
+            technologies: selectedTechnologies,
+            objectives,
+            deadline: deadlineStr,
+          });
+        } catch (err: any) {
+          toast.error("Erro ao gerar checklist automática", { description: err?.message || "Tente novamente." });
+          setLoading(false);
+          return;
+        }
+
+        const createdProject = await createProject.mutateAsync({
           name: projectName,
           description,
           type,
@@ -92,7 +124,37 @@ export default function NewProject() {
           deadline: deadlineStr,
         });
 
-        toast.success("Projeto criado com sucesso! Gerando checklist...");
+        if (createdProject?.id && generatedChecklist.length > 0) {
+          try {
+            await supabase.from("checklists").insert({
+              project_id: createdProject.id,
+              title: "Checklist inicial (gerada pela IA)",
+            });
+
+            const { data: checklistsData } = await supabase
+              .from("checklists")
+              .select("id")
+              .eq("project_id", createdProject.id)
+              .order("created_at", { ascending: true });
+            const checklistId = checklistsData?.[0]?.id;
+
+            if (checklistId) {
+              const itemsToInsert = generatedChecklist.map((desc, idx) => ({
+                checklist_id: checklistId,
+                description: desc,
+                checked: false,
+                order_index: idx + 1,
+              }));
+              if (itemsToInsert.length > 0) {
+                await supabase.from("checklist_items").insert(itemsToInsert);
+              }
+            }
+          } catch (err: any) {
+            toast.error("Checklist criada parcialmente: salve manualmente!", { description: err?.message || "Parcialmente criada." });
+          }
+        }
+
+        toast.success("Projeto e checklist criados com sucesso!");
 
         setLoading(false);
         navigate("/dashboard");
@@ -104,7 +166,7 @@ export default function NewProject() {
       }
     }
   };
-  
+
   const handleBack = () => {
     if (step > 1) {
       setStep(step - 1);
