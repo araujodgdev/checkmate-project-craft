@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -7,45 +8,33 @@
     /* Blue-focused color palette for CheckMate */
     --background: 210 40% 98%;
     --foreground: 222.2 84% 4.9%;
-
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
-
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-
     /* Primary blue */
     --primary: 220 85% 57%;
     --primary-foreground: 210 40% 98%;
-
     /* Secondary blue */
     --secondary: 215 70% 95%;
     --secondary-foreground: 220 85% 40%;
-
     /* Muted state */
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-
     /* Accent color */
-    --accent: 262 80% 77%;
+    --accent: 210 45% 72%;
     --accent-foreground: 0 0% 100%;
-
     /* Status colors */
     --success: 142 76% 36%;
     --success-foreground: 210 40% 98%;
-    
     --warning: 38 92% 50%;
     --warning-foreground: 210 40% 98%;
-
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 220 85% 57%;
-
     --radius: 0.5rem;
-
     /* Sidebar styling */
     --sidebar-background: 220 33% 98%;
     --sidebar-foreground: 222 47% 20%;
@@ -60,43 +49,32 @@
   .dark {
     --background: 222.2 47% 11.2%;
     --foreground: 210 40% 98%;
-
     --card: 222.2 47% 14%;
     --card-foreground: 210 40% 98%;
-
     --popover: 222.2 47% 11.2%;
     --popover-foreground: 210 40% 98%;
-
     /* Primary blue in dark mode */
     --primary: 217.2 91.2% 59.8%;
     --primary-foreground: 222.2 47.4% 11.2%;
-
     /* Secondary blue in dark mode */
     --secondary: 217.2 32.6% 22%;
     --secondary-foreground: 210 40% 98%;
-
     /* Muted state */
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-
-    /* Accent color */
-    --accent: 262 70% 65%;
+    /* Accent color reforçada azul neutro */
+    --accent: 210 55% 30%;
     --accent-foreground: 0 0% 100%;
-
     /* Status colors */
     --success: 142 76% 36%;
     --success-foreground: 210 40% 98%;
-    
     --warning: 38 92% 50%;
     --warning-foreground: 210 40% 98%;
-
     --destructive: 0 62.8% 42%;
     --destructive-foreground: 0 0% 98%;
-
     --border: 217.2 32.6% 20%;
     --input: 217.2 32.6% 20%;
     --ring: 217.2 91.2% 59.8%;
-
     /* Sidebar styling */
     --sidebar-background: 222.2 47% 9%;
     --sidebar-foreground: 210 40% 90%;
@@ -118,8 +96,14 @@
   }
 }
 
-/* Ajuste: gradiente mais suave para dark, landing */
+/* Ajuste: gradiente azul escuro, suave para dark, landing */
 body.dark,
 html.dark {
   background: linear-gradient(135deg, #1A1F2C 0%, #22263B 60%, #28355a 100%) !important;
+}
+
+/* Remover purple de hover (usa tons de azul para hover no botão) */
+button:hover, [role=button]:hover {
+  /* Garanta hover azul */
+  --tw-bg-opacity: 1;
 }

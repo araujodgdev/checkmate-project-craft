@@ -1,7 +1,7 @@
 
 import { ReactNode } from "react";
 import { Sidebar } from "./sidebar";
-import { ThemeToggle } from "../theme-toggle";
+import { ThemeSwitch } from "../theme-switch";
 import { cn } from "@/lib/utils";
 
 type MainLayoutProps = {
@@ -20,8 +20,9 @@ export function MainLayout({ children, className, hideNav = false }: MainLayoutP
           "transition-all duration-300 ease-in-out",
           className
         )}>
-          <div className="fixed top-4 right-4 md:top-6 md:right-6 z-50">
-            <ThemeToggle />
+          <div className="w-full flex justify-end items-center gap-4 py-4 px-4 md:px-6">
+            <ThemeSwitch />
+            {/* Aqui podem entrar outros botões/icons, mas o ThemeSwitch sempre à esquerda */}
           </div>
           {children}
         </main>

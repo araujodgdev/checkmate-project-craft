@@ -1,25 +1,33 @@
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
 import { ThemeSwitch } from "@/components/theme-switch";
+import { useEffect } from "react";
 
 export default function Landing() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Quando o usuário clicar em "Começar", redireciona para a aba de registro
+  const handleRegisterClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    navigate("/auth", { state: { tab: "register" } });
+  };
+
   return (
     <div className="min-h-screen flex flex-col relative
       bg-gradient-to-br from-blue-50 via-white to-blue-100
-      dark:bg-gradient-to-br dark:from-[#1A1F2C] dark:via-[#222] dark:to-[#335]
+      dark:bg-gradient-to-br dark:from-[#1A1F2C] dark:via-[#22263B] dark:to-[#28355a]
       transition-colors">
-      {/* Switch de tema canto superior direito, bem posicionado */}
-      <div className="absolute top-5 right-5 z-50">
-        <ThemeSwitch />
-      </div>
-      <header className="w-full flex justify-between items-center px-8 py-6">
+      {/* Linha de botões e switch, alinhados à direita mas sem position absolute */}
+      <header className="w-full flex justify-between items-center px-8 py-6 gap-4">
         <div className="flex items-center gap-2">
           <CheckCircle className="text-blue-600 dark:text-blue-300" size={32} />
           <span className="font-bold text-2xl text-blue-700 dark:text-blue-200">CheckMate</span>
         </div>
-        <div>
+        <div className="flex items-center gap-3">
+          <ThemeSwitch />
           <Link to="/auth">
             <Button
               variant="outline"
@@ -28,13 +36,12 @@ export default function Landing() {
               Entrar
             </Button>
           </Link>
-          <Link to="/dashboard">
-            <Button
-              className="hover:bg-blue-600 hover:text-white dark:hover:bg-blue-800 dark:hover:text-blue-50 transition-colors"
-            >
-              Ir para Dashboard
-            </Button>
-          </Link>
+          <Button
+            className="hover:bg-blue-600 hover:text-white dark:hover:bg-blue-800 dark:hover:text-blue-50 transition-colors"
+            onClick={handleRegisterClick}
+          >
+            Cadastrar
+          </Button>
         </div>
       </header>
 
@@ -46,14 +53,13 @@ export default function Landing() {
           O CheckMate gera listas de tarefas personalizadas para o seu projeto, integrando autenticação segura, lógica inteligente e interface moderna. Comece agora a otimizar o fluxo do seu time!
         </p>
         <div className="flex gap-4">
-          <Link to="/auth">
-            <Button
-              size="lg"
-              className="text-base hover:bg-blue-600 hover:text-white dark:hover:bg-blue-700 dark:hover:text-white transition-colors"
-            >
-              Começar
-            </Button>
-          </Link>
+          <Button
+            size="lg"
+            className="text-base hover:bg-blue-600 hover:text-white dark:hover:bg-blue-700 dark:hover:text-white transition-colors"
+            onClick={handleRegisterClick}
+          >
+            Começar
+          </Button>
           <a
             href="https://docs.lovable.dev/"
             target="_blank"
