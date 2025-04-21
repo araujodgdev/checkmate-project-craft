@@ -42,7 +42,7 @@ export function useChecklistItems(checklistId?: string) {
         .maybeSingle();
         
       if (error) throw error;
-      return data as ChecklistItem;
+      return data as unknown as ChecklistItem;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["checklists", projectId] });
@@ -68,7 +68,7 @@ export function useChecklistItems(checklistId?: string) {
         .maybeSingle();
         
       if (error) throw error;
-      return data as ChecklistItem;
+      return data as unknown as ChecklistItem;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["checklists", projectId] });
@@ -97,7 +97,7 @@ export function useChecklistItems(checklistId?: string) {
         .maybeSingle();
         
       if (error) throw error;
-      return data as ChecklistItem;
+      return data as unknown as ChecklistItem;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["checklists", projectId] });
@@ -131,7 +131,7 @@ export function useChecklistItems(checklistId?: string) {
     
     try {
       // Busca todos os checklists do projeto
-      const { data: checklists } = await supabase
+      const { data: checklistsData } = await supabase
         .from("checklists")
         .select(`
           id,
@@ -139,13 +139,13 @@ export function useChecklistItems(checklistId?: string) {
         `)
         .eq("project_id", projectId);
       
-      if (!checklists || checklists.length === 0) return;
+      if (!checklistsData || checklistsData.length === 0) return;
       
       // Conta o total de itens e itens concluídos
       let totalItems = 0;
       let completedItems = 0;
       
-      checklists.forEach((checklist: any) => {
+      checklistsData.forEach((checklist: any) => {
         if (!checklist.checklist_items) return;
         
         totalItems += checklist.checklist_items.length;

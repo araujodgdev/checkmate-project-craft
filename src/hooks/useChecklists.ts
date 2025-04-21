@@ -41,7 +41,7 @@ export function useChecklists(projectId?: string) {
         .order("created_at", { ascending: true });
 
       if (error) throw error;
-      return data as Checklist[] || [];
+      return data as unknown as Checklist[] || [];
     },
     enabled: !!user && !!projectId,
   });
@@ -61,7 +61,7 @@ export function useChecklists(projectId?: string) {
         .maybeSingle();
         
       if (error) throw error;
-      return data as Checklist;
+      return data as unknown as Checklist;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["checklists", projectId] });
@@ -81,7 +81,7 @@ export function useChecklists(projectId?: string) {
         .maybeSingle();
         
       if (error) throw error;
-      return data as Checklist;
+      return data as unknown as Checklist;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["checklists", projectId] });
