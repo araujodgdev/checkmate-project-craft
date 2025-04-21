@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { TaskItem } from "./TaskItem";
 import { useChecklistItems } from "@/hooks/useChecklistItems";
@@ -9,6 +8,10 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDown } from "lucide-react";
+import { Check, Calendar } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { AddChecklistItemForm } from "./AddChecklistItemForm";
+import { toast } from "sonner";
 
 interface ChecklistItemProps {
   checklist: {
@@ -29,6 +32,8 @@ interface ChecklistItemProps {
 
 export function ChecklistItem({ checklist, isOpen, onToggle, filter }: ChecklistItemProps) {
   const [newItemText, setNewItemText] = useState("");
+  const [newItemDueDate, setNewItemDueDate] = useState<Date | null>(null);
+  const [newItemIsCritical, setNewItemIsCritical] = useState(false);
   const [isAddingItem, setIsAddingItem] = useState(false);
   
   const { createItem, toggleItemStatus, deleteItem } = useChecklistItems();
@@ -37,13 +42,19 @@ export function ChecklistItem({ checklist, isOpen, onToggle, filter }: Checklist
     if (!newItemText.trim()) return;
     
     try {
-      await createItem.mutateAsync({ 
-        checklistId: checklist.id, 
-        description: newItemText 
+      await createItem.mutateAsync({
+        checklistId: checklist.id,
+        description: newItemText,
+        dueDate: newItemDueDate,
+        isCritical: newItemIsCritical,
       });
       setNewItemText("");
+      setNewItemDueDate(null);
+      setNewItemIsCritical(false);
+      toast.success("Item adicionado ao checklist!");
     } catch (error) {
       console.error("Erro ao adicionar item:", error);
+      toast.error("Não foi possível adicionar item!");
     } finally {
       setIsAddingItem(false);
     }
@@ -122,37 +133,17 @@ export function ChecklistItem({ checklist, isOpen, onToggle, filter }: Checklist
             )}
             
             {isAddingItem ? (
-              <div className="flex items-center gap-2 mt-4">
-                <Input
-                  type="text"
-                  placeholder="Descrição da nova tarefa"
-                  value={newItemText}
-                  onChange={(e) => setNewItemText(e.target.value)}
-                  className="flex-1"
-                  autoFocus
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && newItemText.trim()) {
-                      handleCreateItem();
-                    } else if (e.key === 'Escape') {
-                      setIsAddingItem(false);
-                    }
-                  }}
-                />
-                <Button 
-                  size="sm" 
-                  onClick={handleCreateItem}
-                  disabled={!newItemText.trim()}
-                >
-                  <Check size={16} className="mr-1" /> Adicionar
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  onClick={() => setIsAddingItem(false)}
-                >
-                  Cancelar
-                </Button>
-              </div>
+              <AddChecklistItemForm
+                value={newItemText}
+                onChange={setNewItemText}
+                dueDate={newItemDueDate}
+                onDueDateChange={setNewItemDueDate}
+                isCritical={newItemIsCritical}
+                onIsCriticalChange={setNewItemIsCritical}
+                onSubmit={handleCreateItem}
+                onCancel={() => setIsAddingItem(false)}
+                loading={createItem.isPending}
+              />
             ) : (
               <Button 
                 variant="ghost" 
