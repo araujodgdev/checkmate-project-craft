@@ -138,7 +138,7 @@ export function ChecklistItem({ checklist, isOpen, onToggle, filter }: Checklist
                 value={newItemText}
                 onChange={setNewItemText}
                 dueDate={newItemDueDate}
-                onDueDateChange={setNewItemDueDate}
+                onDueDateChange={(date) => setNewItemDueDate(date || null)}
                 isCritical={newItemIsCritical}
                 onIsCriticalChange={setNewItemIsCritical}
                 onSubmit={handleCreateItem}

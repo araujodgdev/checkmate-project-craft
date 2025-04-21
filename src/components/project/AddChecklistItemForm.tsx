@@ -52,7 +52,7 @@ export function AddChecklistItemForm({
         <div className="flex-1">
           <TaskDatePicker
             date={dueDate || undefined}
-            onDateChange={onDueDateChange}
+            onDateChange={(date) => onDueDateChange(date || null)}
             className="w-full"
           />
         </div>

@@ -124,9 +124,12 @@ export function TaskItem({
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
+    const dueDate = new Date(parsedDueDate);
+    dueDate.setHours(0, 0, 0, 0);
+    
     if (checked) return "completed";
-    if (isBefore(parsedDueDate, today)) return "overdue";
-    if (isBefore(parsedDueDate, addDays(today, 3))) return "soon";
+    if (isBefore(dueDate, today)) return "overdue";
+    if (isBefore(dueDate, addDays(today, 3))) return "soon";
     return "normal";
   };
 
