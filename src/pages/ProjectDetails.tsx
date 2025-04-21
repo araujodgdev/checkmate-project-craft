@@ -20,7 +20,8 @@ import {
   Plus,
   Trash2,
   Loader2,
-  AlertCircle
+  AlertCircle,
+  CalendarRange
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -258,9 +259,14 @@ export default function ProjectDetails() {
                 <PenSquare size={16} />
                 <span className="hidden md:inline">Editar Projeto</span>
               </Button>
-              <Button variant="outline" size="sm" className="gap-2">
-                <RefreshCw size={16} />
-                <span className="hidden md:inline">Regenerar</span>
+              <Button
+                variant="default"
+                size="sm"
+                className="gap-2 bg-[#1EAEDB] hover:bg-[#33C3F0] text-white"
+                onClick={() => window.open("https://calendly.com/", "_blank")}
+              >
+                <CalendarRange size={16} />
+                <span>Integrar com Calendly</span>
               </Button>
               <Button variant="outline" size="sm" className="gap-2">
                 <Download size={16} />
