@@ -57,7 +57,8 @@ export function useProject(projectId?: string) {
     error: checklistsError,
     createChecklist,
     updateChecklist,
-    deleteChecklist
+    deleteChecklist,
+    upcomingTasks
   } = useChecklists(projectId);
 
   return {
@@ -69,6 +70,7 @@ export function useProject(projectId?: string) {
     checklists,
     createChecklist,
     updateChecklist,
-    deleteChecklist
+    deleteChecklist,
+    upcomingTasks
   };
 }

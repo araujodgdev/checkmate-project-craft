@@ -11,6 +11,8 @@ interface ChecklistItem {
   checked: boolean;
   order_index: number;
   created_at: string;
+  due_date?: string | null;
+  is_critical?: boolean;
 }
 
 interface Checklist {
@@ -110,12 +112,41 @@ export function useChecklists(projectId?: string) {
     },
   });
 
+  // Analisar e retornar tarefas com prazo próximo
+  const upcomingTasks = data?.flatMap(checklist => 
+    (checklist.checklist_items || [])
+      .filter(item => 
+        !item.checked && 
+        item.due_date && 
+        isSoonDueDate(new Date(item.due_date))
+      )
+      .map(item => ({
+        ...item,
+        checklistTitle: checklist.title
+      }))
+  ) || [];
+
+  // Função auxiliar para verificar se uma data está próxima (menos de 3 dias)
+  function isSoonDueDate(date: Date): boolean {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const dueDate = new Date(date);
+    dueDate.setHours(0, 0, 0, 0);
+    
+    const diffTime = dueDate.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return diffDays >= 0 && diffDays <= 3;
+  }
+
   return {
     checklists: data,
     isLoading,
     error,
     createChecklist,
     updateChecklist,
-    deleteChecklist
+    deleteChecklist,
+    upcomingTasks
   };
 }

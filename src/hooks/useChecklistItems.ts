@@ -11,6 +11,8 @@ interface ChecklistItem {
   checked: boolean;
   order_index: number;
   created_at: string;
+  due_date?: string | null;
+  is_critical?: boolean;
 }
 
 export function useChecklistItems(checklistId?: string) {
@@ -23,11 +25,15 @@ export function useChecklistItems(checklistId?: string) {
     mutationFn: async ({ 
       checklistId, 
       description, 
-      orderIndex 
+      orderIndex,
+      dueDate,
+      isCritical = false
     }: { 
       checklistId: string; 
       description: string;
       orderIndex?: number;
+      dueDate?: Date | null;
+      isCritical?: boolean;
     }) => {
       if (!user) throw new Error("Usuário não autenticado");
       
@@ -38,7 +44,9 @@ export function useChecklistItems(checklistId?: string) {
           checklist_id: checklistId,
           description,
           order_index: orderIndex || 0,
-          checked: false
+          checked: false,
+          due_date: dueDate ? dueDate.toISOString() : null,
+          is_critical: isCritical
         } as any)
         .select()
         .maybeSingle() as any);
@@ -96,6 +104,62 @@ export function useChecklistItems(checklistId?: string) {
       const { error, data } = await (supabase
         .from("checklist_items" as any)
         .update({ description } as any)
+        .eq("id", id)
+        .select()
+        .maybeSingle() as any);
+        
+      if (error) throw error;
+      return data as unknown as ChecklistItem;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["checklists", projectId] });
+    },
+  });
+
+  // Nova mutação para atualizar a data de prazo do item
+  const updateItemDueDate = useMutation({
+    mutationFn: async ({ 
+      id, 
+      dueDate 
+    }: { 
+      id: string; 
+      dueDate: Date | null 
+    }) => {
+      if (!user) throw new Error("Usuário não autenticado");
+      
+      const { error, data } = await (supabase
+        .from("checklist_items" as any)
+        .update({ 
+          due_date: dueDate ? dueDate.toISOString() : null 
+        } as any)
+        .eq("id", id)
+        .select()
+        .maybeSingle() as any);
+        
+      if (error) throw error;
+      return data as unknown as ChecklistItem;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["checklists", projectId] });
+    },
+  });
+
+  // Nova mutação para marcar um item como crítico
+  const toggleItemCritical = useMutation({
+    mutationFn: async ({ 
+      id, 
+      isCritical 
+    }: { 
+      id: string; 
+      isCritical: boolean 
+    }) => {
+      if (!user) throw new Error("Usuário não autenticado");
+      
+      const { error, data } = await (supabase
+        .from("checklist_items" as any)
+        .update({ 
+          is_critical: isCritical 
+        } as any)
         .eq("id", id)
         .select()
         .maybeSingle() as any);
@@ -177,6 +241,8 @@ export function useChecklistItems(checklistId?: string) {
     createItem,
     toggleItemStatus,
     updateItemDescription,
-    deleteItem
+    deleteItem,
+    updateItemDueDate,
+    toggleItemCritical
   };
 }
