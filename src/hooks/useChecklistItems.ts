@@ -37,6 +37,8 @@ export function useChecklistItems(checklistId?: string) {
     }) => {
       if (!user) throw new Error("Usuário não autenticado");
       
+      console.log("Criando item com data:", dueDate, "e crítico:", isCritical);
+      
       // Aqui usamos type assertion para lidar com as limitações do tipo Supabase
       const { error, data } = await (supabase
         .from("checklist_items" as any)

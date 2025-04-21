@@ -15,7 +15,9 @@ export type Database = {
           checklist_id: string
           created_at: string
           description: string
+          due_date: string | null
           id: string
+          is_critical: boolean | null
           order_index: number
         }
         Insert: {
@@ -23,7 +25,9 @@ export type Database = {
           checklist_id: string
           created_at?: string
           description: string
+          due_date?: string | null
           id?: string
+          is_critical?: boolean | null
           order_index?: number
         }
         Update: {
@@ -31,7 +35,9 @@ export type Database = {
           checklist_id?: string
           created_at?: string
           description?: string
+          due_date?: string | null
           id?: string
+          is_critical?: boolean | null
           order_index?: number
         }
         Relationships: [

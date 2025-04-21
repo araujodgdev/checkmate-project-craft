@@ -72,6 +72,7 @@ export function TaskDatePicker({
           onSelect={handleSelect}
           initialFocus
           locale={ptBR}
+          className="p-3 pointer-events-auto"
         />
       </PopoverContent>
     </Popover>

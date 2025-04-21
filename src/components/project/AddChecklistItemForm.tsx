@@ -30,13 +30,13 @@ export function AddChecklistItemForm({
   loading
 }: AddChecklistItemFormProps) {
   return (
-    <div className="flex flex-col gap-2 mt-4 md:flex-row md:gap-4 md:items-end">
+    <div className="space-y-4">
       <Input
         type="text"
         placeholder="Descrição da nova tarefa"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="flex-1"
+        className="w-full"
         autoFocus
         onKeyDown={(e) => {
           if (e.key === 'Enter' && value.trim()) {
@@ -47,29 +47,40 @@ export function AddChecklistItemForm({
         }}
         disabled={loading}
       />
-      <div className="flex items-center gap-2">
-        <TaskDatePicker
-          date={dueDate || undefined}
-          onDateChange={onDueDateChange}
-          className="h-8 text-xs w-36"
-        />
-        <span className="text-xs text-muted-foreground">Crítico</span>
-        <Switch checked={isCritical} onCheckedChange={onIsCriticalChange} />
+      
+      <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-4">
+        <div className="flex-1">
+          <TaskDatePicker
+            date={dueDate || undefined}
+            onDateChange={onDueDateChange}
+            className="w-full"
+          />
+        </div>
+        
+        <div className="flex items-center space-x-2">
+          <span className="text-sm text-muted-foreground">Crítico</span>
+          <Switch 
+            checked={isCritical} 
+            onCheckedChange={onIsCriticalChange}
+            disabled={loading}
+          />
+        </div>
+      </div>
+      
+      <div className="flex space-x-2 justify-end">
         <Button
-          size="sm"
-          onClick={onSubmit}
-          disabled={!value.trim() || loading}
-          className="ml-2"
-        >
-          <Calendar size={16} className="mr-1" /> Adicionar
-        </Button>
-        <Button
-          size="sm"
           variant="outline"
           onClick={onCancel}
           disabled={loading}
         >
           Cancelar
+        </Button>
+        <Button
+          onClick={onSubmit}
+          disabled={!value.trim() || loading}
+        >
+          <Calendar size={16} className="mr-2" /> 
+          Adicionar
         </Button>
       </div>
     </div>
