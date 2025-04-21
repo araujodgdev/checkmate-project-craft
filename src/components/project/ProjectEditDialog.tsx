@@ -181,7 +181,7 @@ export const ProjectEditDialog: React.FC<Props> = ({
           </DialogClose>
           <Button
             onClick={handleSave}
-            loading={isLoading ? 1 : 0}
+            loading={isLoading}
             disabled={isLoading}
           >
             {isLoading ? "Salvando..." : "Salvar"}
