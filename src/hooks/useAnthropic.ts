@@ -7,27 +7,6 @@ export function useAnthropic() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Função para buscar a chave da API
-  const getApiKey = async (): Promise<string> => {
-    try {
-      const { data, error } = await supabase.functions.invoke('get-anthropic-key');
-      
-      if (error) {
-        console.error('Erro ao buscar chave da API:', error);
-        throw new Error(`Erro ao obter chave da API: ${error.message || 'Erro desconhecido'}`);
-      }
-      
-      if (!data?.key) {
-        throw new Error('Chave da API não encontrada na resposta');
-      }
-      
-      return data.key;
-    } catch (err: any) {
-      console.error('Falha ao buscar chave da API:', err);
-      throw new Error(err?.message || 'Erro ao buscar chave da API');
-    }
-  };
-
   // Mutação para gerar checklist usando a API da Anthropic
   const generateChecklist = useMutation({
     mutationFn: async (projectDetails: {
@@ -45,7 +24,7 @@ export function useAnthropic() {
         console.log("Detalhes do projeto enviados:", projectDetails);
         
         // Obter a chave da API
-        const apiKey = await getApiKey();
+        const apiKey = "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"
         
         // Montar o prompt para a API da Anthropic
         const prompt = `
