@@ -11,24 +11,52 @@ import { Badge } from "@/components/ui/badge";
 import { useProjects } from "@/hooks/useProjects";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function Dashboard() {
   const { projects, isLoading, error } = useProjects();
   const [tab, setTab] = useState<"all" | "active" | "completed">("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const [selectedTechs, setSelectedTechs] = useState<string[]>([]);
 
-  // Filtros com busca
+  // Extrair tipos e tecnologias únicos dos projetos
+  const projectTypes = Array.from(new Set((projects ?? []).map(p => p.type)));
+  const technologies = Array.from(new Set(
+    (projects ?? []).flatMap(p => p.technologies ?? [])
+  ));
+
+  // Filtros combinados
   const filteredProjects = (projects ?? []).filter((project: any) => {
+    // Filtro por status (aba)
     const matchesTab = tab === "all" || 
       (tab === "active" ? !project.completed : project.completed);
     
+    // Filtro por busca
     const matchesSearch = project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       project.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       project.technologies?.some((tech: string) => 
         tech.toLowerCase().includes(searchQuery.toLowerCase())
       );
 
-    return matchesTab && matchesSearch;
+    // Filtro por tipo
+    const matchesType = selectedTypes.length === 0 || 
+      selectedTypes.includes(project.type);
+
+    // Filtro por tecnologias
+    const matchesTech = selectedTechs.length === 0 ||
+      project.technologies?.some((tech: string) => 
+        selectedTechs.includes(tech)
+      );
+
+    return matchesTab && matchesSearch && matchesType && matchesTech;
   });
 
   return (
@@ -73,9 +101,50 @@ export default function Dashboard() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
-                <Button variant="outline" size="icon">
-                  <Filter size={18} />
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="icon">
+                      <Filter size={18} />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel>Tipo de Projeto</DropdownMenuLabel>
+                    {projectTypes.map((type) => (
+                      <DropdownMenuCheckboxItem
+                        key={type}
+                        checked={selectedTypes.includes(type)}
+                        onCheckedChange={(checked) => {
+                          setSelectedTypes(prev => 
+                            checked 
+                              ? [...prev, type]
+                              : prev.filter(t => t !== type)
+                          );
+                        }}
+                      >
+                        {type}
+                      </DropdownMenuCheckboxItem>
+                    ))}
+                    
+                    <DropdownMenuSeparator />
+                    
+                    <DropdownMenuLabel>Tecnologias</DropdownMenuLabel>
+                    {technologies.map((tech) => (
+                      <DropdownMenuCheckboxItem
+                        key={tech}
+                        checked={selectedTechs.includes(tech)}
+                        onCheckedChange={(checked) => {
+                          setSelectedTechs(prev => 
+                            checked 
+                              ? [...prev, tech]
+                              : prev.filter(t => t !== tech)
+                          );
+                        }}
+                      >
+                        {tech}
+                      </DropdownMenuCheckboxItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
 
               <TabsContent value="all" className="mt-6">
