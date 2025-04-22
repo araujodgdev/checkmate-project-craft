@@ -29,7 +29,8 @@ export default function ProjectDetails() {
     setIsEditOpen,
     isEditLoading,
     handleDeleteProject,
-    handleEditProject
+    handleEditProject,
+    createChecklist
   } = useProjectState(projectId);
 
   const {
@@ -105,7 +106,7 @@ export default function ProjectDetails() {
           handleTaskChange={handleTaskChange}
           handleDeleteChecklist={handleDeleteChecklist}
           isPublicRoute={isPublicRoute}
-          createChecklist={useProject(projectId).createChecklist}
+          createChecklist={createChecklist}
         />
 
         {!isPublicRoute && (

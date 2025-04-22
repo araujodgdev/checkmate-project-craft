@@ -17,7 +17,8 @@ export function useProjectState(projectId: string | undefined) {
     checklists,
     updateProject,
     deleteProject,
-    isPublicRoute
+    isPublicRoute,
+    createChecklist
   } = useProject(projectId);
 
   const handleDeleteProject = async () => {
@@ -70,6 +71,7 @@ export function useProjectState(projectId: string | undefined) {
     setIsEditOpen,
     isEditLoading,
     handleDeleteProject,
-    handleEditProject
+    handleEditProject,
+    createChecklist
   };
 }
