@@ -8,7 +8,7 @@ import { useAuthStore } from "@/lib/store";
 
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
-  const [width, setWidth] = useState(220); // Reduced from 256 to 220 pixels
+  const [width, setWidth] = useState(220);
   const [isDragging, setIsDragging] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const minWidth = 180;
@@ -98,18 +98,14 @@ export function Sidebar() {
         ref={sidebarRef}
         style={{
           width: `${width}px`,
-          left: 0,
-          top: 0,
-          bottom: 0,
+          minWidth: `${width}px`,
           height: "100vh",
-          position: "fixed",
-          zIndex: 40,
-          transition: isDragging ? "" : "width 0.3s",
         }}
         className={cn(
-          "border-r border-border bg-sidebar flex flex-col overflow-x-hidden h-screen",
-          collapsed && "w-16",
-          isDragging ? "" : "duration-300"
+          "border-r border-border bg-sidebar flex flex-col h-screen sticky top-0 left-0",
+          collapsed && "w-16 min-w-[64px]",
+          "transition-all duration-300",
+          "hidden md:flex"
         )}
       >
         <div className="flex items-center p-4 border-b border-border min-w-0">
