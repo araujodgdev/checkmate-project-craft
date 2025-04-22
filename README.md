@@ -32,14 +32,6 @@ Checkmate é um sistema inteligente de checklist para gerenciamento de projetos 
 
 ### Gerenciamento de Tarefas
 - Adição de tarefas com descrição detalhada
-- Marcação de tarefas como críticas
-- Definição de prazos para tarefas
-- Alerta de tarefas com prazo próximo do vencimento
-
-### Agendamento de Reuniões
-- Interface para agendamento de reuniões de acompanhamento
-- Integração com serviços externos de calendário
-- Convite de participantes via e-mail
 
 ### Gerenciamento de Arquivos
 - Upload e gerenciamento de arquivos relacionados ao projeto
@@ -92,9 +84,6 @@ O projeto é organizado em uma arquitetura modular:
 
 ### Modo Público
 O sistema permite compartilhar projetos em modo público, permitindo que usuários não autenticados visualizem (mas não editem) projetos específicos.
-
-### Agendamento Inteligente
-O agendamento de reuniões permite sincronização com ferramentas externas como Calendly para facilitar a coordenação com a equipe.
 
 ### Análise de Progresso
 O sistema calcula automaticamente o progresso dos projetos com base nas tarefas concluídas, fornecendo métricas em tempo real.
