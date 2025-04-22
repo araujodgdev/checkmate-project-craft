@@ -10,7 +10,7 @@ interface ProfileHeaderProps {
 
 export function ProfileHeader({ user }: ProfileHeaderProps) {
   return (
-    <Card>
+    <Card className="ml-2"> {/* Adicionei margem esquerda para criar um pequeno espaçamento */}
       <CardHeader className="pb-2">
         <h1 className="text-2xl font-bold">Perfil</h1>
       </CardHeader>
@@ -33,3 +33,4 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
     </Card>
   );
 }
+
