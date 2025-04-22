@@ -38,7 +38,7 @@ export function ProjectHeader({ project, isEditOpen, setIsEditOpen, isDeletingPr
           <MeetingScheduler
             projectId={project.id}
             buttonVariant="default"
-            size="sm"
+            buttonSize="sm"
             className="gap-2 bg-[#1EAEDB] hover:bg-[#33C3F0] text-white"
           />
           <Button variant="outline" size="sm" className="gap-2">
