@@ -1,9 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { PenSquare, Download, Trash2, Loader2, ChevronRight } from "lucide-react";
+import { PenSquare, Download, Trash2, Loader2, ChevronRight, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
 import React, { useState } from "react";
 import { ProjectPDFDialog } from "./ProjectPDFDialog";
+import { Switch } from "@/components/ui/switch";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ProjectHeaderProps {
   project: any;
@@ -25,6 +28,29 @@ export function ProjectHeader({
   navigate
 }: ProjectHeaderProps) {
   const [isPDFOpen, setIsPDFOpen] = useState(false);
+  const [isUpdatingVisibility, setIsUpdatingVisibility] = useState(false);
+
+  const togglePublicAccess = async () => {
+    try {
+      setIsUpdatingVisibility(true);
+      const { error } = await supabase
+        .from('projects')
+        .update({ is_public: !project.is_public })
+        .eq('id', project.id);
+
+      if (error) throw error;
+
+      toast.success(project.is_public ? 
+        "Projeto definido como privado" : 
+        "Projeto definido como público"
+      );
+    } catch (error) {
+      console.error('Erro ao atualizar visibilidade:', error);
+      toast.error("Erro ao atualizar visibilidade do projeto");
+    } finally {
+      setIsUpdatingVisibility(false);
+    }
+  };
 
   return (
     <header className="mb-8">
@@ -39,7 +65,21 @@ export function ProjectHeader({
           <p className="text-muted-foreground mt-1 max-w-2xl">
             {project.description || "Sem descrição"}
           </p>
+          <div className="flex items-center gap-2 mt-3">
+            <Globe size={16} className="text-muted-foreground" />
+            <div className="flex items-center gap-2">
+              <Switch
+                checked={project.is_public}
+                onCheckedChange={togglePublicAccess}
+                disabled={isUpdatingVisibility}
+              />
+              <span className="text-sm text-muted-foreground">
+                {project.is_public ? "Projeto público" : "Projeto privado"}
+              </span>
+            </div>
+          </div>
         </div>
+        
         <div className="flex flex-wrap items-center gap-2 mt-4 lg:mt-0">
           <Button variant="outline" size="sm" className="gap-2" onClick={() => setIsEditOpen(true)}>
             <PenSquare size={16} />

@@ -1,4 +1,3 @@
-
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthStore } from "@/lib/store";
@@ -15,6 +14,7 @@ interface Project {
   progress: number;
   deadline: string | null;
   created_at: string | null;
+  is_public: boolean; // Adicionando o campo is_public
 }
 
 export function useProject(projectId?: string) {
