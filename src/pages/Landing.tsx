@@ -32,17 +32,17 @@ export default function Landing() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#1A1F2C] via-[#22263B] to-[#28355a] dark:from-[#1A1F2C] dark:via-[#22263B] dark:to-[#28355a] light:from-blue-50 light:via-blue-100 light:to-blue-200">
+    <div className="min-h-screen flex flex-col">
       {/* Header */}
       <header className="w-full flex justify-between items-center px-8 py-6">
         <div className="flex items-center gap-2">
           <CheckCircle className="text-blue-400" size={32} />
-          <span className="font-bold text-2xl text-blue-100 dark:text-blue-100 light:text-blue-900">CheckMate</span>
+          <span className="font-bold text-2xl text-blue-900 dark:text-blue-100">CheckMate</span>
         </div>
         <div className="flex items-center gap-3">
           <ThemeSwitch />
           <Link to="/auth">
-            <Button variant="outline" className="text-blue-100 dark:text-blue-100 light:text-blue-900 border-blue-400 hover:bg-blue-900/20">
+            <Button variant="outline" className="text-blue-900 dark:text-blue-100 border-blue-400 hover:bg-blue-900/20">
               Entrar
             </Button>
           </Link>
@@ -58,7 +58,7 @@ export default function Landing() {
       {/* Hero Section */}
       <main className="flex-1 flex flex-col">
         <div className="text-center max-w-4xl mx-auto px-4 pt-20 pb-16">
-          <h1 className="text-5xl font-bold text-white dark:text-white light:text-blue-950 mb-6">
+          <h1 className="text-5xl font-bold text-blue-950 dark:text-white mb-6">
             Gerenciamento Eficiente para
             <div className="text-blue-400">
               <Typewriter
@@ -70,7 +70,7 @@ export default function Landing() {
               />
             </div>
           </h1>
-          <p className="text-xl text-gray-300 dark:text-gray-300 light:text-gray-700 mb-8">
+          <p className="text-xl text-gray-700 dark:text-gray-300 mb-8">
             Nunca perca um passo importante no desenvolvimento. Organize, acompanhe e gerencie seus projetos com inteligência.
           </p>
           <div className="flex gap-4 justify-center">
@@ -85,7 +85,7 @@ export default function Landing() {
               <Button
                 size="lg"
                 variant="outline"
-                className="text-blue-100 dark:text-blue-100 light:text-blue-900 border-blue-400 hover:bg-blue-900/20"
+                className="text-blue-900 dark:text-blue-100 border-blue-400 hover:bg-blue-900/20"
               >
                 Ver Demonstração
               </Button>
@@ -94,20 +94,20 @@ export default function Landing() {
         </div>
 
         {/* Features Grid */}
-        <div className="bg-[#1A1F2C]/50 dark:bg-[#1A1F2C]/50 light:bg-blue-100/50 py-20">
+        <div className="bg-blue-100/50 dark:bg-[#1A1F2C]/50 py-20">
           <div className="max-w-6xl mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center text-white dark:text-white light:text-blue-950 mb-4">
+            <h2 className="text-3xl font-bold text-center text-blue-950 dark:text-white mb-4">
               Potencialize seu Fluxo de Desenvolvimento
             </h2>
-            <p className="text-center text-gray-300 dark:text-gray-300 light:text-gray-700 mb-12">
+            <p className="text-center text-gray-700 dark:text-gray-300 mb-12">
               O CheckMate fornece tudo que os desenvolvedores precisam para gerenciar projetos de forma eficiente.
             </p>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {features.map((feature) => (
-                <div key={feature.title} className="bg-[#22263B] dark:bg-[#22263B] light:bg-white p-6 rounded-lg border border-blue-900/30">
+                <div key={feature.title} className="bg-white dark:bg-[#22263B] p-6 rounded-lg border border-blue-900/30">
                   <div className="text-4xl mb-4">{feature.icon}</div>
-                  <h3 className="text-xl font-semibold text-blue-100 dark:text-blue-100 light:text-blue-900 mb-2">{feature.title}</h3>
-                  <p className="text-gray-400 dark:text-gray-400 light:text-gray-600">{feature.description}</p>
+                  <h3 className="text-xl font-semibold text-blue-900 dark:text-blue-100 mb-2">{feature.title}</h3>
+                  <p className="text-gray-600 dark:text-gray-400">{feature.description}</p>
                 </div>
               ))}
             </div>
@@ -135,7 +135,7 @@ export default function Landing() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-[#1A1F2C] dark:bg-[#1A1F2C] light:bg-blue-950 text-gray-400 py-12">
+      <footer className="bg-blue-950 dark:bg-[#1A1F2C] text-gray-400 py-12">
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div>

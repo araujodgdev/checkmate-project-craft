@@ -96,13 +96,13 @@
   }
 }
 
-/* Ajuste: gradiente azul escuro, suave para dark, landing */
-.dark body {
-  background: linear-gradient(135deg, #1A1F2C 0%, #22263B 60%, #28355a 100%) !important;
+/* Dark mode gradient background - applied when dark class is present */
+html.dark body {
+  background: linear-gradient(135deg, #1A1F2C 0%, #22263B 60%, #28355a 100%);
 }
 
-/* Light mode background gradient */
-body {
+/* Light mode background gradient - default */
+html:not(.dark) body {
   background: linear-gradient(135deg, #f0f4ff 0%, #dbe4ff 60%, #c7d2fe 100%);
 }
 
