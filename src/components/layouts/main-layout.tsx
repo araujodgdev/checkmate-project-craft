@@ -12,13 +12,13 @@ type MainLayoutProps = {
 
 export function MainLayout({ children, className, hideNav = false }: MainLayoutProps) {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       <div className="flex min-h-screen">
         {!hideNav && <Sidebar />}
         <main
           className={cn(
             "flex-1 flex flex-col bg-background px-4 md:px-6 space-y-6",
-            "transition-[margin] duration-300 ease-in-out",
+            "transition-all duration-300 ease-in-out",
             !hideNav ? "md:ml-[220px]" : "",
             className
           )}

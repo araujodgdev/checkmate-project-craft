@@ -88,10 +88,6 @@ export function Sidebar() {
     }
   }, [collapsed, width]);
 
-  useEffect(() => {
-    console.log("Current sidebar width:", width);
-  }, [width]);
-
   return (
     <>
       <div
@@ -99,12 +95,11 @@ export function Sidebar() {
         style={{
           width: `${width}px`,
           minWidth: `${width}px`,
-          height: "100vh",
         }}
         className={cn(
-          "border-r border-border bg-sidebar flex flex-col h-screen sticky top-0 left-0",
+          "h-screen sticky top-0 left-0 flex flex-col border-r border-border bg-sidebar",
           collapsed && "w-16 min-w-[64px]",
-          "transition-all duration-300",
+          "transition-all duration-300 ease-in-out",
           "hidden md:flex"
         )}
       >
@@ -241,7 +236,7 @@ export function Sidebar() {
       {!collapsed && (
         <button
           type="button"
-          className="fixed top-0 h-full w-4 cursor-ew-resize z-50 border-0 bg-transparent p-0 m-0 focus:outline-none"
+          className="fixed top-0 h-full w-4 cursor-ew-resize z-50 border-0 bg-transparent p-0 m-0 focus:outline-none hidden md:block"
           style={{ left: `${width - 2}px` }}
           onMouseDown={startResize}
           onKeyDown={handleKeyDown}
@@ -276,7 +271,7 @@ export function Sidebar() {
           variant="ghost"
           size="sm"
           onClick={() => setCollapsed(false)}
-          className="fixed left-14 top-4 h-8 w-8 rounded-full bg-background border border-border shadow-md flex items-center justify-center text-foreground hover:bg-accent z-50"
+          className="fixed left-14 top-4 h-8 w-8 rounded-full bg-background border border-border shadow-md flex items-center justify-center text-foreground hover:bg-accent z-50 hidden md:flex"
         >
           <ChevronRight size={16} />
         </Button>
