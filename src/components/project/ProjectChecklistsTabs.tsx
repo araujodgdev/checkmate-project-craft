@@ -1,3 +1,4 @@
+
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ClipboardCheck, SquarePen, Filter, Loader2, Plus } from "lucide-react";
@@ -76,6 +77,7 @@ export function ProjectChecklistsTabs({
             <CardHeader className="pb-3">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <CardTitle>Checklists do Projeto</CardTitle>
+                {!isPublicRoute && (
                 <div className="flex items-center gap-2">
                   <Button variant="outline" size="sm" onClick={() => setOpenCategories(checklists?.map(c => c.id) || [])}>
                     Expandir Todos
@@ -92,6 +94,17 @@ export function ProjectChecklistsTabs({
                     </select>
                   </Button>
                 </div>
+                )}
+                {isPublicRoute && (
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="sm" onClick={() => setOpenCategories(checklists?.map(c => c.id) || [])}>
+                    Expandir Todos
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => setOpenCategories([])}>
+                    Recolher Todos
+                  </Button>
+                </div>
+                )}
               </div>
             </CardHeader>
             <CardContent>
@@ -134,9 +147,15 @@ export function ProjectChecklistsTabs({
                           <Separator className="mb-4" />
                           <div className="space-y-3">
                             {checklist.checklist_items?.map((item: any) => <div key={item.id} className="flex items-center gap-3">
-                                <input type="checkbox" checked={item.checked} onChange={e => handleTaskChange(item.id, e.target.checked)} className="mt-0.5" id={item.id} />
+                                {!isPublicRoute ? (
+                                  <input type="checkbox" checked={item.checked} onChange={e => handleTaskChange(item.id, e.target.checked)} className="mt-0.5" id={item.id} />
+                                ) : (
+                                  <div className={`w-4 h-4 border ${item.checked ? 'bg-primary border-primary' : 'border-gray-300'} rounded flex items-center justify-center`}>
+                                    {item.checked && <div className="w-2 h-2 bg-white rounded-sm"></div>}
+                                  </div>
+                                )}
                                 <div className="flex-1">
-                                  <label htmlFor={item.id} className={cn("text-sm font-medium cursor-pointer", item.checked && "line-through text-muted-foreground")}>
+                                  <label htmlFor={isPublicRoute ? undefined : item.id} className={cn("text-sm font-medium", !isPublicRoute && "cursor-pointer", item.checked && "line-through text-muted-foreground")}>
                                     {item.description}
                                   </label>
                                 </div>
@@ -144,7 +163,7 @@ export function ProjectChecklistsTabs({
                             {checklist.checklist_items?.length === 0 && <div className="text-sm text-muted-foreground text-center py-2">
                                 Nenhuma tarefa encontrada para este critério
                               </div>}
-                            {addingChecklistItem === checklist.id ? <div className="flex items-center gap-2 mt-4">
+                            {!isPublicRoute && addingChecklistItem === checklist.id ? <div className="flex items-center gap-2 mt-4">
                                 <Input type="text" placeholder="Descrição da nova tarefa" value={newItemText} onChange={e => setNewItemText(e.target.value)} className="flex-1" />
                                 <Button size="sm" onClick={() => handleCreateItem(checklist.id)} disabled={!newItemText.trim()}>
                                   Adicionar
@@ -152,7 +171,7 @@ export function ProjectChecklistsTabs({
                                 <Button size="sm" variant="outline" onClick={() => setAddingChecklistItem(null)}>
                                   Cancelar
                                 </Button>
-                              </div> : <Button variant="ghost" size="sm" className="mt-3 w-full justify-start text-muted-foreground" onClick={() => setAddingChecklistItem(checklist.id)}>
+                              </div> : !isPublicRoute && <Button variant="ghost" size="sm" className="mt-3 w-full justify-start text-muted-foreground" onClick={() => setAddingChecklistItem(checklist.id)}>
                                 <Plus size={16} className="mr-2" />
                                 Adicionar tarefa
                               </Button>}
@@ -163,8 +182,9 @@ export function ProjectChecklistsTabs({
               })}
                 
                 {filteredChecklists?.length === 0 && <div className="text-center py-8 text-muted-foreground">
-                    Nenhum checklist encontrado. Crie seu primeiro checklist!
+                    {isPublicRoute ? "Nenhum checklist encontrado neste projeto." : "Nenhum checklist encontrado. Crie seu primeiro checklist!"}
                   </div>}
+                  
                 {isPublicRoute ? null : <Dialog>
                   <DialogTrigger asChild>
                     <Button className="w-full" variant="outline">

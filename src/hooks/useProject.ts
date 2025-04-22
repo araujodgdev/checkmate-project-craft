@@ -71,7 +71,7 @@ export function useProject(projectId?: string) {
     updateChecklist,
     deleteChecklist,
     upcomingTasks
-  } = useChecklists(projectId);
+  } = useChecklists(projectId, isPublicRoute);
 
   return {
     project,

@@ -23,15 +23,18 @@ interface Checklist {
   checklist_items?: ChecklistItem[];
 }
 
-export function useChecklists(projectId?: string) {
+export function useChecklists(projectId?: string, isPublicRoute?: boolean) {
   const user = useAuthStore((s) => s.user);
   const queryClient = useQueryClient();
 
   // Lista checklists de um projeto específico
   const { data, isLoading, error } = useQuery({
-    queryKey: ["checklists", projectId],
+    queryKey: ["checklists", projectId, isPublicRoute],
     queryFn: async () => {
-      if (!user || !projectId) return [];
+      if (!projectId) return [];
+      
+      // Se não estiver em uma rota pública e não houver usuário logado, retorna array vazio
+      if (!isPublicRoute && !user) return [];
       
       // Usamos type assertion para lidar com as limitações do tipo Supabase
       const { data, error } = await (supabase
@@ -46,7 +49,7 @@ export function useChecklists(projectId?: string) {
       if (error) throw error;
       return data as unknown as Checklist[] || [];
     },
-    enabled: !!user && !!projectId,
+    enabled: !!projectId,
   });
 
   // Mutação para criar checklist
