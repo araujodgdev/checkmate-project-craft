@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { MainLayout } from "@/components/layouts/main-layout";
 import { useParams, useNavigate } from "react-router-dom";
@@ -33,7 +34,8 @@ export default function ProjectDetails() {
     updateProject,
     deleteProject,
     createChecklist,
-    deleteChecklist
+    deleteChecklist,
+    isPublicRoute
   } = useProject(projectId);
 
   const { 
@@ -52,6 +54,8 @@ export default function ProjectDetails() {
   }, [checklists]);
 
   const handleTaskChange = async (taskId: string, checked: boolean) => {
+    if (isPublicRoute) return; // Não permitir alterações em modo público
+    
     try {
       await toggleItemStatus.mutateAsync({ id: taskId, checked });
     } catch (error) {
@@ -61,6 +65,7 @@ export default function ProjectDetails() {
   };
 
   const handleCreateChecklist = async () => {
+    if (isPublicRoute) return; // Não permitir alterações em modo público
     if (!newChecklistTitle.trim() || !projectId) return;
     
     try {
@@ -80,6 +85,7 @@ export default function ProjectDetails() {
   };
 
   const handleCreateItem = async (checklistId: string) => {
+    if (isPublicRoute) return; // Não permitir alterações em modo público
     if (!newItemText.trim()) return;
     
     try {
@@ -98,6 +104,7 @@ export default function ProjectDetails() {
   };
 
   const handleDeleteProject = async () => {
+    if (isPublicRoute) return; // Não permitir alterações em modo público
     if (!projectId) return;
     
     try {
@@ -120,6 +127,7 @@ export default function ProjectDetails() {
     technologies: string[];
     deadline: string | null;
   }) => {
+    if (isPublicRoute) return; // Não permitir alterações em modo público
     if (!projectId || !project) return;
     try {
       setIsEditLoading(true);
@@ -175,7 +183,7 @@ export default function ProjectDetails() {
           project={project}
           checklists={checklists || []}
           isEditOpen={isEditOpen}
-          setIsEditOpen={setIsEditOpen}
+          setIsEditOpen={setEditOpen => isPublicRoute ? null : setIsEditOpen(setEditOpen)}
           isDeletingProject={isDeletingProject}
           handleDeleteProject={handleDeleteProject}
           navigate={navigate}
@@ -186,7 +194,7 @@ export default function ProjectDetails() {
           <ProjectSummaryCard checklists={checklists} />
         </div>
 
-        <ProjectFilesManager projectId={projectId} />
+        {!isPublicRoute && <ProjectFilesManager projectId={projectId} />}
 
         <ProjectChecklistsTabs
           checklists={checklists}
@@ -205,15 +213,18 @@ export default function ProjectDetails() {
           handleCreateChecklist={handleCreateChecklist}
           handleCreateItem={handleCreateItem}
           handleTaskChange={handleTaskChange}
+          isPublicRoute={isPublicRoute}
         />
 
-        <ProjectEditDialog
-          open={isEditOpen}
-          onOpenChange={setIsEditOpen}
-          project={project}
-          onSave={handleEditProject}
-          isLoading={isEditLoading}
-        />
+        {!isPublicRoute && (
+          <ProjectEditDialog
+            open={isEditOpen}
+            onOpenChange={setIsEditOpen}
+            project={project}
+            onSave={handleEditProject}
+            isLoading={isEditLoading}
+          />
+        )}
       </div>
     </MainLayout>
   );

@@ -8,24 +8,27 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 import React from "react";
+
 interface ProjectChecklistsTabsProps {
   checklists: any[];
   filter: string;
-  setFilter: (v: string) => void;
+  setFilter: (filter: string) => void;
   openCategories: string[];
-  setOpenCategories: (v: string[]) => void;
+  setOpenCategories: (categories: string[]) => void;
   addingChecklistItem: string | null;
-  setAddingChecklistItem: (v: string | null) => void;
+  setAddingChecklistItem: (id: string | null) => void;
   newChecklistTitle: string;
-  setNewChecklistTitle: (v: string) => void;
+  setNewChecklistTitle: (title: string) => void;
   newItemText: string;
-  setNewItemText: (v: string) => void;
+  setNewItemText: (text: string) => void;
   createChecklist: any;
   isAddingChecklist: boolean;
   handleCreateChecklist: () => void;
   handleCreateItem: (checklistId: string) => void;
   handleTaskChange: (taskId: string, checked: boolean) => void;
+  isPublicRoute?: boolean;
 }
+
 export function ProjectChecklistsTabs({
   checklists,
   filter,
@@ -42,9 +45,9 @@ export function ProjectChecklistsTabs({
   isAddingChecklist,
   handleCreateChecklist,
   handleCreateItem,
-  handleTaskChange
+  handleTaskChange,
+  isPublicRoute
 }: ProjectChecklistsTabsProps) {
-  // Filtros e estados já estão controlados no componente pai
   const filteredChecklists = checklists?.map(checklist => ({
     ...checklist,
     checklist_items: (checklist.checklist_items || []).filter(item => {
@@ -54,6 +57,7 @@ export function ProjectChecklistsTabs({
       return true;
     })
   })) || [];
+
   return <div className="mb-6">
       <Tabs defaultValue="checklist" className="w-full">
         <TabsList className="mb-4">
@@ -161,7 +165,7 @@ export function ProjectChecklistsTabs({
                 {filteredChecklists?.length === 0 && <div className="text-center py-8 text-muted-foreground">
                     Nenhum checklist encontrado. Crie seu primeiro checklist!
                   </div>}
-                <Dialog>
+                {isPublicRoute ? null : <Dialog>
                   <DialogTrigger asChild>
                     <Button className="w-full" variant="outline">
                       <Plus size={16} className="mr-2" />
@@ -195,7 +199,7 @@ export function ProjectChecklistsTabs({
                       </Button>
                     </DialogFooter>
                   </DialogContent>
-                </Dialog>
+                </Dialog>}
               </div>
             </CardContent>
           </Card>

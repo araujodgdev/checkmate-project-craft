@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { PenSquare, Download, Trash2, Loader2, ChevronRight, Globe, Share2 } from "lucide-react";
@@ -8,6 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { useLocation } from "react-router-dom";
 
 interface ProjectHeaderProps {
   project: any;
@@ -31,6 +33,8 @@ export function ProjectHeader({
   const [isPDFOpen, setIsPDFOpen] = useState(false);
   const [isUpdatingVisibility, setIsUpdatingVisibility] = useState(false);
   const queryClient = useQueryClient();
+  const location = useLocation();
+  const isPublicRoute = location.pathname.includes('/public');
 
   const togglePublicAccess = async () => {
     try {
@@ -82,70 +86,89 @@ export function ProjectHeader({
           <p className="text-muted-foreground mt-1 max-w-2xl">
             {project.description || "Sem descrição"}
           </p>
-          <div className="flex items-center gap-2 mt-3">
-            <Globe size={16} className="text-muted-foreground" />
-            <div className="flex items-center gap-2">
-              <Switch
-                checked={project.is_public}
-                onCheckedChange={togglePublicAccess}
-                disabled={isUpdatingVisibility}
-              />
-              <span className="text-sm text-muted-foreground">
-                {project.is_public ? "Projeto público" : "Projeto privado"}
-              </span>
-              {project.is_public && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-2 ml-2"
-                  onClick={handleShare}
-                >
-                  <Share2 size={16} />
-                  <span>Compartilhar</span>
-                </Button>
-              )}
+          {!isPublicRoute && (
+            <div className="flex items-center gap-2 mt-3">
+              <Globe size={16} className="text-muted-foreground" />
+              <div className="flex items-center gap-2">
+                <Switch
+                  checked={project.is_public}
+                  onCheckedChange={togglePublicAccess}
+                  disabled={isUpdatingVisibility}
+                />
+                <span className="text-sm text-muted-foreground">
+                  {project.is_public ? "Projeto público" : "Projeto privado"}
+                </span>
+                {project.is_public && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-2 ml-2"
+                    onClick={handleShare}
+                  >
+                    <Share2 size={16} />
+                    <span>Compartilhar</span>
+                  </Button>
+                )}
+              </div>
             </div>
-          </div>
+          )}
+          {isPublicRoute && (
+            <div className="mt-3 flex items-center gap-2">
+              <Globe size={16} className="text-green-500" />
+              <span className="text-sm text-muted-foreground">Visualização pública</span>
+            </div>
+          )}
         </div>
         
-        <div className="flex flex-wrap items-center gap-2 mt-4 lg:mt-0">
-          <Button variant="outline" size="sm" className="gap-2" onClick={() => setIsEditOpen(true)}>
-            <PenSquare size={16} />
-            <span className="hidden md:inline">Editar Projeto</span>
-          </Button>
-          
-          <Button variant="outline" size="sm" className="gap-2" onClick={() => setIsPDFOpen(true)}>
-            <Download size={16} />
-            <span className="hidden md:inline">Exportar</span>
-          </Button>
+        {!isPublicRoute && (
+          <div className="flex flex-wrap items-center gap-2 mt-4 lg:mt-0">
+            <Button variant="outline" size="sm" className="gap-2" onClick={() => setIsEditOpen(true)}>
+              <PenSquare size={16} />
+              <span className="hidden md:inline">Editar Projeto</span>
+            </Button>
+            
+            <Button variant="outline" size="sm" className="gap-2" onClick={() => setIsPDFOpen(true)}>
+              <Download size={16} />
+              <span className="hidden md:inline">Exportar</span>
+            </Button>
 
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive" size="sm" className="gap-2">
-                <Trash2 size={16} />
-                <span className="hidden md:inline">Excluir</span>
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Esta ação não pode ser desfeita. Isso excluirá permanentemente seu projeto
-                  e todos os checklists associados.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                <AlertDialogAction className="bg-destructive hover:bg-destructive/90" onClick={handleDeleteProject} disabled={isDeletingProject}>
-                  {isDeletingProject ? <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Excluindo...
-                    </> : 'Excluir Projeto'}
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="sm" className="gap-2">
+                  <Trash2 size={16} />
+                  <span className="hidden md:inline">Excluir</span>
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Esta ação não pode ser desfeita. Isso excluirá permanentemente seu projeto
+                    e todos os checklists associados.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction className="bg-destructive hover:bg-destructive/90" onClick={handleDeleteProject} disabled={isDeletingProject}>
+                    {isDeletingProject ? <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Excluindo...
+                      </> : 'Excluir Projeto'}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        )}
+        
+        {isPublicRoute && (
+          <div className="mt-4 lg:mt-0">
+            <Button variant="outline" size="sm" onClick={() => setIsPDFOpen(true)} className="gap-2">
+              <Download size={16} />
+              <span>Exportar PDF</span>
+            </Button>
+          </div>
+        )}
       </div>
 
       <ProjectPDFDialog
