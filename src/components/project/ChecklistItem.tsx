@@ -13,6 +13,7 @@ import { Check, Calendar } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { AddChecklistItemForm } from "./AddChecklistItemForm";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface ChecklistItemProps {
   checklist: {
@@ -38,6 +39,8 @@ export function ChecklistItem({ checklist, isOpen, onToggle, filter }: Checklist
   const [isAddingItem, setIsAddingItem] = useState(false);
   
   const { createItem, toggleItemStatus, deleteItem } = useChecklistItems();
+  const queryClient = useQueryClient();
+  const projectId = queryClient.getQueryData<string>(["currentProjectId"]);
 
   const handleCreateItem = async () => {
     if (!newItemText.trim()) return;
@@ -128,6 +131,7 @@ export function ChecklistItem({ checklist, isOpen, onToggle, filter }: Checklist
                   dueDate={item.due_date}
                   isCritical={item.is_critical}
                   checklistId={checklist.id}
+                  projectId={projectId || ""}
                 />
               ))
             ) : (

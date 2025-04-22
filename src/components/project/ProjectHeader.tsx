@@ -1,8 +1,10 @@
+
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { PenSquare, CalendarRange, Download, Trash2, Loader2, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import React from "react";
+import { MeetingScheduler } from "./MeetingScheduler";
 
 interface ProjectHeaderProps {
   project: any;

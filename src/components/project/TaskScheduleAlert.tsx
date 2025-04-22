@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { MeetingScheduler } from "./MeetingScheduler";
 import { addDays, format, isAfter, isBefore } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface TaskAlertProps {
   upcomingTasks: Array<{
@@ -22,6 +23,9 @@ interface TaskAlertProps {
 }
 
 export function TaskScheduleAlert({ upcomingTasks }: TaskAlertProps) {
+  const queryClient = useQueryClient();
+  const projectId = queryClient.getQueryData<string>(["currentProjectId"]);
+  
   if (upcomingTasks.length === 0) return null;
 
   const today = new Date();
@@ -68,9 +72,10 @@ export function TaskScheduleAlert({ upcomingTasks }: TaskAlertProps) {
               {format(today, "EEEE, dd 'de' MMMM", { locale: ptBR })}
             </div>
             <MeetingScheduler 
-              buttonText="Agendar check-in" 
+              buttonText="Agendar check-in"
               buttonVariant="default"
               buttonSize="sm"
+              projectId={projectId || ""}
             />
           </div>
         </div>
