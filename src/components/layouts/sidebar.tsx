@@ -5,28 +5,19 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { CheckCircle, ChevronLeft, ChevronRight, GripVertical, Home, User, LogOut } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuthStore } from "@/lib/store";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
-  const [width, setWidth] = useState(220);
+  const [width, setWidth] = useState(220); // Reduced from 256 to 220 pixels
   const [isDragging, setIsDragging] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const minWidth = 180;
   const maxWidth = 400;
   const collapsedWidth = 64;
-  
-  const isMobile = useIsMobile();
+
   const location = useLocation();
   const navigate = useNavigate();
   const logout = useAuthStore((state) => state.logout);
-
-  // Auto collapse sidebar on mobile
-  useEffect(() => {
-    if (isMobile) {
-      setCollapsed(true);
-    }
-  }, [isMobile]);
 
   const navItems = [
     { label: "Dashboard", icon: Home, href: "/dashboard" },
@@ -118,7 +109,6 @@ export function Sidebar() {
         className={cn(
           "border-r border-border bg-sidebar flex flex-col overflow-x-hidden h-screen",
           collapsed && "w-16",
-          isMobile && !collapsed && "shadow-xl",
           isDragging ? "" : "duration-300"
         )}
       >
@@ -294,14 +284,6 @@ export function Sidebar() {
         >
           <ChevronRight size={16} />
         </Button>
-      )}
-      
-      {isMobile && !collapsed && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-30"
-          onClick={() => setCollapsed(true)}
-          aria-hidden="true"
-        />
       )}
     </>
   );
