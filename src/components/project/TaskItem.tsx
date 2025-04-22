@@ -1,11 +1,10 @@
-
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { TaskDatePicker } from "./TaskDatePicker";
 import { MeetingScheduler } from "./MeetingScheduler";
-import { Calendar, Check, Clock, Edit, Save, Star } from "lucide-react";
+import { Calendar, Check, Clock, Edit, Trash2, Save, Star } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { format, isAfter, isBefore, addDays } from "date-fns";
@@ -42,7 +41,8 @@ export function TaskItem({
     toggleItemStatus,
     updateItemDescription,
     updateItemDueDate,
-    toggleItemCritical
+    toggleItemCritical,
+    deleteItem
   } = useChecklistItems(checklistId);
 
   const parsedDueDate = dueDate ? new Date(dueDate) : undefined;
@@ -117,7 +117,16 @@ export function TaskItem({
     }
   };
 
-  // Verificar status do prazo
+  const handleDelete = async () => {
+    try {
+      await deleteItem.mutateAsync(id);
+      toast.success("Item removido com sucesso");
+    } catch (error) {
+      console.error("Erro ao deletar item:", error);
+      toast.error("Erro ao remover item");
+    }
+  };
+
   const getDateStatus = () => {
     if (!parsedDueDate) return null;
     
@@ -191,6 +200,15 @@ export function TaskItem({
                   <Edit size={14} />
                 </Button>
                 
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-6 w-6 hover:bg-destructive hover:text-destructive-foreground" 
+                  onClick={handleDelete}
+                >
+                  <Trash2 size={14} />
+                </Button>
+
                 <Button 
                   variant="ghost" 
                   size="icon" 
