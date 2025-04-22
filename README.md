@@ -1,73 +1,100 @@
-# Welcome to your Lovable project
 
-## Project info
+# Checkmate - Sistema Inteligente de Checklist para Desenvolvimento
 
-**URL**: https://lovable.dev/projects/3af90c0e-9da2-4b06-b176-5d65f680af97
+![Checkmate Logo](public/placeholder.svg)
 
-## How can I edit this code?
+Checkmate é um sistema inteligente de checklist para gerenciamento de projetos de desenvolvimento, com foco em lógica, autenticação, layout responsivo e integração com API externa.
 
-There are several ways of editing your application.
+## Funcionalidades Principais
 
-**Use Lovable**
+### Autenticação e Gerenciamento de Usuários
+- Login e cadastro de usuários com e-mail/senha via Supabase Auth
+- Perfil de usuário personalizado com visualização de estatísticas
+- Proteção de rotas para usuários autenticados
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/3af90c0e-9da2-4b06-b176-5d65f680af97) and start prompting.
+### Dashboard de Projetos
+- Visualização de todos os projetos do usuário
+- Estatísticas e métricas de progresso dos projetos
+- Filtragem e ordenação de projetos
 
-Changes made via Lovable will be committed automatically to this repo.
+### Gerenciamento de Projetos
+- Criação de novos projetos com definição de nome, descrição, tipo e tecnologias
+- Edição de informações do projeto
+- Definição de prazos e monitoramento de progresso
+- Compartilhamento de projetos via links públicos
 
-**Use your preferred IDE**
+### Sistema de Checklists
+- Criação de múltiplos checklists para cada projeto
+- Adição de tarefas dentro de cada checklist
+- Marcação de tarefas como concluídas
+- Filtragem de tarefas (todas, pendentes, concluídas)
+- Visualização de progresso por checklist e geral do projeto
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Gerenciamento de Tarefas
+- Adição de tarefas com descrição detalhada
+- Marcação de tarefas como críticas
+- Definição de prazos para tarefas
+- Alerta de tarefas com prazo próximo do vencimento
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Agendamento de Reuniões
+- Interface para agendamento de reuniões de acompanhamento
+- Integração com serviços externos de calendário
+- Convite de participantes via e-mail
 
-Follow these steps:
+### Gerenciamento de Arquivos
+- Upload e gerenciamento de arquivos relacionados ao projeto
+- Visualização de documentos diretamente na plataforma
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### Exportação e Compartilhamento
+- Exportação de checklists e projetos em formato PDF
+- Compartilhamento de projetos com links públicos para visualização
+- Permissões configuráveis para visualização de informações do projeto
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### Interface Responsiva
+- Design adaptável para dispositivos móveis e desktop
+- Layout otimizado para diferentes tamanhos de tela
+- Componentes interativos responsivos
 
-# Step 3: Install the necessary dependencies.
-npm i
+### Análise e Estatísticas
+- Visualização de progresso geral dos projetos
+- Análise de tecnologias mais utilizadas
+- Estatísticas de projetos concluídos e em andamento
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+## Tecnologias Utilizadas
 
-**Edit a file directly in GitHub**
+- **Frontend**: React, TypeScript, Tailwind CSS
+- **UI Components**: shadcn/ui, Lucide React
+- **Gerenciamento de Estado**: TanStack Query, Zustand
+- **Autenticação e Banco de Dados**: Supabase
+- **Roteamento**: React Router
+- **Visualização de Dados**: Recharts
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Estrutura do Projeto
 
-**Use GitHub Codespaces**
+O projeto é organizado em uma arquitetura modular:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- `/components`: Componentes reutilizáveis da interface
+- `/hooks`: Hooks personalizados para lógica de negócios
+- `/lib`: Utilidades e configurações
+- `/pages`: Páginas principais da aplicação
+- `/integrations`: Integrações com serviços externos
 
-## What technologies are used for this project?
+## Como Utilizar
 
-This project is built with:
+1. Crie uma conta ou faça login
+2. Na dashboard, crie um novo projeto
+3. Adicione checklists ao projeto
+4. Adicione tarefas aos checklists
+5. Acompanhe o progresso e gerencie suas tarefas
+6. Compartilhe o projeto com sua equipe quando necessário
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Funcionalidades Avançadas
 
-## How can I deploy this project?
+### Modo Público
+O sistema permite compartilhar projetos em modo público, permitindo que usuários não autenticados visualizem (mas não editem) projetos específicos.
 
-Simply open [Lovable](https://lovable.dev/projects/3af90c0e-9da2-4b06-b176-5d65f680af97) and click on Share -> Publish.
+### Agendamento Inteligente
+O agendamento de reuniões permite sincronização com ferramentas externas como Calendly para facilitar a coordenação com a equipe.
 
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+### Análise de Progresso
+O sistema calcula automaticamente o progresso dos projetos com base nas tarefas concluídas, fornecendo métricas em tempo real.
