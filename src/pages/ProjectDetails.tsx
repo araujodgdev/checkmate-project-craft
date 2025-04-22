@@ -146,7 +146,7 @@ export default function ProjectDetails() {
 
   if (isLoading) {
     return (
-      <MainLayout>
+      <MainLayout hideNav={isPublicRoute}>
         <div className="container py-8 animate-fade-in">
           <div className="flex flex-col items-center justify-center h-[60vh]">
             <Loader2 className="w-10 h-10 animate-spin text-primary mb-4" />
@@ -159,7 +159,7 @@ export default function ProjectDetails() {
 
   if (error || !project) {
     return (
-      <MainLayout>
+      <MainLayout hideNav={isPublicRoute}>
         <div className="container py-8 animate-fade-in">
           <div className="flex flex-col items-center justify-center h-[60vh]">
             <AlertCircle className="w-10 h-10 text-destructive mb-4" />
@@ -177,7 +177,7 @@ export default function ProjectDetails() {
   }
 
   return (
-    <MainLayout>
+    <MainLayout hideNav={isPublicRoute}>
       <div className="container py-8 animate-fade-in">
         <ProjectHeader
           project={project}
