@@ -1,25 +1,33 @@
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { PenSquare, CalendarRange, Download, Trash2, Loader2, ChevronRight } from "lucide-react";
+import { PenSquare, Download, Trash2, Loader2, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import React from "react";
+import React, { useState } from "react";
+import { ProjectPDFDialog } from "./ProjectPDFDialog";
+
 interface ProjectHeaderProps {
   project: any;
+  checklists: any[];
   isEditOpen: boolean;
   setIsEditOpen: (v: boolean) => void;
   isDeletingProject: boolean;
   handleDeleteProject: () => void;
   navigate: (to: string) => void;
 }
+
 export function ProjectHeader({
   project,
+  checklists,
   isEditOpen,
   setIsEditOpen,
   isDeletingProject,
   handleDeleteProject,
   navigate
 }: ProjectHeaderProps) {
-  return <header className="mb-8">
+  const [isPDFOpen, setIsPDFOpen] = useState(false);
+
+  return (
+    <header className="mb-8">
       <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
@@ -38,10 +46,11 @@ export function ProjectHeader({
             <span className="hidden md:inline">Editar Projeto</span>
           </Button>
           
-          <Button variant="outline" size="sm" className="gap-2">
+          <Button variant="outline" size="sm" className="gap-2" onClick={() => setIsPDFOpen(true)}>
             <Download size={16} />
             <span className="hidden md:inline">Exportar</span>
           </Button>
+
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="destructive" size="sm" className="gap-2">
@@ -70,5 +79,13 @@ export function ProjectHeader({
           </AlertDialog>
         </div>
       </div>
-    </header>;
+
+      <ProjectPDFDialog
+        open={isPDFOpen}
+        onOpenChange={setIsPDFOpen}
+        project={project}
+        checklists={checklists}
+      />
+    </header>
+  );
 }

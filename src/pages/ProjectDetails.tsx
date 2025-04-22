@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { MainLayout } from "@/components/layouts/main-layout";
 import { useParams, useNavigate } from "react-router-dom";
@@ -174,6 +173,7 @@ export default function ProjectDetails() {
       <div className="container py-8 animate-fade-in">
         <ProjectHeader
           project={project}
+          checklists={checklists || []}
           isEditOpen={isEditOpen}
           setIsEditOpen={setIsEditOpen}
           isDeletingProject={isDeletingProject}
