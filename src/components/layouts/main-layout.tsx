@@ -26,9 +26,7 @@ export function MainLayout({ children, className, hideNav = false }: MainLayoutP
           <div className="w-full flex justify-end items-center gap-4 py-4">
             <ThemeSwitch />
           </div>
-          <div className="ml-12">
-            {children}
-          </div>
+          {children}
         </main>
       </div>
     </div>
