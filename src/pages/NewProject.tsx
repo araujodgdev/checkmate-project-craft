@@ -13,11 +13,11 @@ import { ProjectTechnicalForm } from "./NewProject/ProjectTechnicalForm";
 import { ProjectObjectivesForm } from "./NewProject/ProjectObjectivesForm";
 
 const projectTypes = [
-  { value: "web", label: "Web Application" },
-  { value: "mobile", label: "Mobile Application" },
-  { value: "backend", label: "Backend Service" },
+  { value: "web", label: "Aplicação Web" },
+  { value: "mobile", label: "Aplicação Mobile" },
+  { value: "backend", label: "Serviço Backend" },
   { value: "fullstack", label: "Full Stack" },
-  { value: "desktop", label: "Desktop Application" },
+  { value: "desktop", label: "Aplicação Desktop" },
 ];
 
 const technologies = [
@@ -209,9 +209,9 @@ export default function NewProject() {
             <ArrowLeft className="h-5 w-5 mr-2" />
           </Button>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Create New Project</h1>
+            <h1 className="text-3xl font-bold tracking-tight">Criar Novo Projeto</h1>
             <p className="text-muted-foreground mt-1">
-              Enter project details to generate a personalized checklist
+              Insira os detalhes do projeto para gerar uma lista personalizada
             </p>
           </div>
         </div>
@@ -262,22 +262,22 @@ export default function NewProject() {
             onClick={handleBack} 
             disabled={step === 1}
           >
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back
+            <ArrowLeft className="mr-2 h-4 w-4" /> Voltar
           </Button>
           
           <Button onClick={handleNext} disabled={loading}>
             {loading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Generating...
+                Gerando...
               </>
             ) : step < totalSteps ? (
               <>
-                Next <ArrowRight className="ml-2 h-4 w-4" />
+                Próximo <ArrowRight className="ml-2 h-4 w-4" />
               </>
             ) : (
               <>
-                <CheckCircle className="mr-2 h-4 w-4" /> Generate Checklist
+                <CheckCircle className="mr-2 h-4 w-4" /> Gerar Lista
               </>
             )}
           </Button>

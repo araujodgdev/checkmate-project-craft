@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
@@ -38,7 +37,6 @@ export function TaskDatePicker({
       const dueDate = new Date(newDate);
       dueDate.setHours(0, 0, 0, 0);
       
-      // Se a data for próxima (menos de 3 dias)
       const diffDays = Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
       
       if (diffDays <= 3 && diffDays > 0) {

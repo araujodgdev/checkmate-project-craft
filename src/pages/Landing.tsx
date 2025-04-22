@@ -9,7 +9,6 @@ export default function Landing() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Quando o usuário clicar em "Começar", redireciona para a aba de registro
   const handleRegisterClick = (e: React.MouseEvent) => {
     e.preventDefault();
     navigate("/auth", { state: { tab: "register" } });
@@ -20,7 +19,6 @@ export default function Landing() {
       bg-gradient-to-br from-blue-50 via-white to-blue-100
       dark:bg-gradient-to-br dark:from-[#1A1F2C] dark:via-[#22263B] dark:to-[#28355a]
       transition-colors">
-      {/* Linha de botões e switch, alinhados à direita mas sem position absolute */}
       <header className="w-full flex justify-between items-center px-8 py-6 gap-4">
         <div className="flex items-center gap-2">
           <CheckCircle className="text-blue-600 dark:text-blue-300" size={32} />
@@ -47,10 +45,10 @@ export default function Landing() {
 
       <main className="flex-1 flex flex-col justify-center items-center text-center px-6">
         <h1 className="text-4xl md:text-5xl font-extrabold text-blue-800 dark:text-blue-200 mb-4">
-          Organize seu desenvolvimento com inteligência.
+          Organize seu desenvolvimento com inteligência
         </h1>
         <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mb-8">
-          O CheckMate gera listas de tarefas personalizadas para o seu projeto, integrando autenticação segura, lógica inteligente e interface moderna. Comece agora a otimizar o fluxo do seu time!
+          O CheckMate gera listas de tarefas personalizadas para o seu projeto, integrando autenticação segura, lógica inteligente e interface moderna.
         </p>
         <div className="flex gap-4">
           <Button
