@@ -1,6 +1,6 @@
 
 import * as React from "react";
-import { CalendarRange, Loader2 } from "lucide-react";
+import { Calendar, CalendarRange, Clock } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -23,66 +23,39 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { useChecklists } from "@/hooks/useChecklists";
-import { useChecklistItems } from "@/hooks/useChecklistItems";
 
 interface MeetingSchedulerProps {
   taskName?: string;
-  projectId: string;
   buttonVariant?: "default" | "outline" | "destructive" | "secondary" | "link" | "ghost";
   buttonSize?: "default" | "sm" | "lg" | "icon";
   buttonText?: string;
   fullWidth?: boolean;
-  className?: string; // Add this line to include className
 }
 
 export function MeetingScheduler({
   taskName,
-  projectId,
   buttonVariant = "outline",
   buttonSize = "sm",
   buttonText = "Agendar Reunião",
   fullWidth = false,
-  className, // Add this line to destructure className
 }: MeetingSchedulerProps) {
   const [meetingDate, setMeetingDate] = React.useState<Date | undefined>(undefined);
   const [meetingTitle, setMeetingTitle] = React.useState<string>(
     taskName ? `Reunião: ${taskName}` : "Reunião de Acompanhamento"
   );
-  const [selectedChecklistId, setSelectedChecklistId] = React.useState<string>("");
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [participantsEmail, setParticipantsEmail] = React.useState<string>("");
+  const [meetingDuration, setMeetingDuration] = React.useState<string>("30");
   const [open, setOpen] = React.useState(false);
 
-  const { checklists } = useChecklists(projectId);
-  const { createItem } = useChecklistItems();
-
-  const handleScheduleMeeting = async () => {
-    if (!selectedChecklistId || !meetingTitle || !meetingDate) {
-      toast.error("Por favor, preencha todos os campos obrigatórios");
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      // Criar o item na checklist selecionada
-      await createItem.mutateAsync({
-        checklistId: selectedChecklistId,
-        description: meetingTitle,
-        dueDate: meetingDate,
-        isCritical: true, // Reuniões são sempre críticas por padrão
-      });
-
-      // Abrir o Calendly em uma nova aba
-      window.open("https://calendly.com/", "_blank");
-      
-      toast.success("Reunião agendada e item adicionado à checklist com sucesso!");
-      setOpen(false);
-    } catch (error) {
-      console.error("Erro ao criar item de reunião:", error);
-      toast.error("Erro ao agendar reunião. Tente novamente.");
-    } finally {
-      setIsLoading(false);
-    }
+  const handleScheduleMeeting = () => {
+    // Aqui integraríamos com a API do Calendly ou Google Calendar
+    // Por enquanto, apenas simulamos a operação com um link e toast
+    
+    const calendarUrl = "https://calendly.com/";
+    
+    toast.success("Reunião agendada com sucesso!");
+    window.open(calendarUrl, "_blank");
+    setOpen(false);
   };
 
   React.useEffect(() => {
@@ -97,7 +70,7 @@ export function MeetingScheduler({
         <Button 
           variant={buttonVariant} 
           size={buttonSize}
-          className={`gap-2 ${fullWidth ? "w-full" : ""} ${className || ""}`} // Update this line to include className
+          className={`gap-2 ${fullWidth ? "w-full" : ""}`}
         >
           <CalendarRange size={16} />
           <span>{buttonText}</span>
@@ -107,30 +80,10 @@ export function MeetingScheduler({
         <DialogHeader>
           <DialogTitle>Agendar Reunião</DialogTitle>
           <DialogDescription>
-            Selecione uma checklist e configure os detalhes da reunião.
+            Configure os detalhes para agendar uma reunião de acompanhamento.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="checklist" className="text-right">
-              Checklist
-            </Label>
-            <Select
-              value={selectedChecklistId}
-              onValueChange={setSelectedChecklistId}
-            >
-              <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Selecione uma checklist" />
-              </SelectTrigger>
-              <SelectContent>
-                {checklists?.map((checklist) => (
-                  <SelectItem key={checklist.id} value={checklist.id}>
-                    {checklist.title}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="title" className="text-right">
               Título
@@ -153,6 +106,37 @@ export function MeetingScheduler({
               />
             </div>
           </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="duration" className="text-right">
+              Duração
+            </Label>
+            <Select 
+              value={meetingDuration} 
+              onValueChange={setMeetingDuration}
+            >
+              <SelectTrigger className="col-span-3">
+                <SelectValue placeholder="Selecione a duração" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="15">15 minutos</SelectItem>
+                <SelectItem value="30">30 minutos</SelectItem>
+                <SelectItem value="45">45 minutos</SelectItem>
+                <SelectItem value="60">1 hora</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="participants" className="text-right">
+              Participantes
+            </Label>
+            <Input
+              id="participants"
+              placeholder="email@exemplo.com, outro@exemplo.com"
+              value={participantsEmail}
+              onChange={(e) => setParticipantsEmail(e.target.value)}
+              className="col-span-3"
+            />
+          </div>
         </div>
         <DialogFooter>
           <DialogClose asChild>
@@ -160,20 +144,12 @@ export function MeetingScheduler({
           </DialogClose>
           <Button 
             onClick={handleScheduleMeeting}
-            disabled={isLoading || !selectedChecklistId || !meetingTitle || !meetingDate}
+            disabled={!meetingDate || !meetingTitle}
           >
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Agendando...
-              </>
-            ) : (
-              "Agendar Reunião"
-            )}
+            Agendar no Calendly
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
-

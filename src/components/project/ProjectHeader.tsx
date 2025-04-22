@@ -4,7 +4,6 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { PenSquare, CalendarRange, Download, Trash2, Loader2, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import React from "react";
-import { MeetingScheduler } from "./MeetingScheduler";
 
 interface ProjectHeaderProps {
   project: any;
@@ -35,12 +34,15 @@ export function ProjectHeader({ project, isEditOpen, setIsEditOpen, isDeletingPr
             <PenSquare size={16} />
             <span className="hidden md:inline">Editar Projeto</span>
           </Button>
-          <MeetingScheduler
-            projectId={project.id}
-            buttonVariant="default"
-            buttonSize="sm"
+          <Button
+            variant="default"
+            size="sm"
             className="gap-2 bg-[#1EAEDB] hover:bg-[#33C3F0] text-white"
-          />
+            onClick={() => window.open("https://calendly.com/", "_blank")}
+          >
+            <CalendarRange size={16} />
+            <span>Integrar com Calendly</span>
+          </Button>
           <Button variant="outline" size="sm" className="gap-2">
             <Download size={16} />
             <span className="hidden md:inline">Exportar</span>

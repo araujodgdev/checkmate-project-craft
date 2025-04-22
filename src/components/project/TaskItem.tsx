@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -21,7 +22,6 @@ interface TaskItemProps {
   checklistId: string;
   onStatusChange?: (id: string, checked: boolean) => void;
   onDelete?: (id: string) => void;
-  projectId: string;
 }
 
 export function TaskItem({
@@ -32,8 +32,7 @@ export function TaskItem({
   isCritical = false,
   checklistId,
   onStatusChange,
-  onDelete,
-  projectId
+  onDelete
 }: TaskItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedDescription, setEditedDescription] = useState(description);
@@ -216,7 +215,6 @@ export function TaskItem({
                 {isCritical && (
                   <MeetingScheduler 
                     taskName={description}
-                    projectId={projectId} // You'll need to get this from the parent component
                     buttonVariant="ghost"
                     buttonSize="icon"
                     buttonText=""
