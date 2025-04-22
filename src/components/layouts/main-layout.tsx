@@ -32,4 +32,3 @@ export function MainLayout({ children, className, hideNav = false }: MainLayoutP
     </div>
   );
 }
-
