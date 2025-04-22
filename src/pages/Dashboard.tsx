@@ -11,6 +11,8 @@ import { NewProjectCard } from "@/components/dashboard/NewProjectCard";
 import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { DashboardFilters } from "@/components/dashboard/DashboardFilters";
 import { EmptyState } from "@/components/dashboard/EmptyState";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 export default function Dashboard() {
   const { projects, isLoading, error } = useProjects();
