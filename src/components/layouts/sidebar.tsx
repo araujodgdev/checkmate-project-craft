@@ -1,4 +1,3 @@
-
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -297,7 +296,6 @@ export function Sidebar() {
         </Button>
       )}
       
-      {/* Overlay para dispositivos móveis quando o sidebar está aberto */}
       {isMobile && !collapsed && (
         <div 
           className="fixed inset-0 bg-black/50 z-30"

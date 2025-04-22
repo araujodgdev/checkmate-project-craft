@@ -20,6 +20,7 @@ export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedTechs, setSelectedTechs] = useState<string[]>([]);
+  const isMobile = useIsMobile();
 
   // Extract unique types and technologies from projects
   const projectTypes = Array.from(new Set((projects ?? []).map(p => p.type)));
@@ -53,9 +54,44 @@ export default function Dashboard() {
     return matchesTab && matchesSearch && matchesType && matchesTech;
   });
 
+  const renderProjectGrid = () => {
+    if (isLoading) {
+      return (
+        <div className="flex justify-center items-center py-12">
+          <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+          Carregando projetos...
+        </div>
+      );
+    }
+    
+    if (error) {
+      return (
+        <div className="text-destructive text-center py-8">
+          Falha ao carregar projetos. Tente novamente.
+        </div>
+      );
+    }
+    
+    if (filteredProjects && filteredProjects.length > 0) {
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredProjects.map((project: any) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
+          <NewProjectCard />
+        </div>
+      );
+    }
+    
+    return <EmptyState />;
+  };
+
   return (
     <MainLayout>
-      <div className="container py-8 animate-fade-in">
+      <div className={cn(
+        "container py-8 animate-fade-in",
+        isMobile ? "pt-4" : ""
+      )}>
         <DashboardHeader />
 
         <div className="mb-8">
@@ -79,69 +115,15 @@ export default function Dashboard() {
               />
 
               <TabsContent value="all" className="mt-6">
-                {isLoading ? (
-                  <div className="flex justify-center items-center py-12">
-                    <Loader2 className="mr-2 h-6 w-6 animate-spin" />
-                    Carregando projetos...
-                  </div>
-                ) : error ? (
-                  <div className="text-destructive text-center py-8">
-                    Falha ao carregar projetos. Tente novamente.
-                  </div>
-                ) : filteredProjects && filteredProjects.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredProjects.map((project: any) => (
-                      <ProjectCard key={project.id} project={project} />
-                    ))}
-                    <NewProjectCard />
-                  </div>
-                ) : (
-                  <EmptyState />
-                )}
+                {renderProjectGrid()}
               </TabsContent>
               
               <TabsContent value="active" className="mt-6">
-                {isLoading ? (
-                  <div className="flex justify-center items-center py-12">
-                    <Loader2 className="mr-2 h-6 w-6 animate-spin" />
-                    Carregando projetos...
-                  </div>
-                ) : error ? (
-                  <div className="text-destructive text-center py-8">
-                    Falha ao carregar projetos. Tente novamente.
-                  </div>
-                ) : filteredProjects && filteredProjects.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredProjects.map((project: any) => (
-                      <ProjectCard key={project.id} project={project} />
-                    ))}
-                    <NewProjectCard />
-                  </div>
-                ) : (
-                  <EmptyState />
-                )}
+                {renderProjectGrid()}
               </TabsContent>
               
               <TabsContent value="completed" className="mt-6">
-                {isLoading ? (
-                  <div className="flex justify-center items-center py-12">
-                    <Loader2 className="mr-2 h-6 w-6 animate-spin" />
-                    Carregando projetos...
-                  </div>
-                ) : error ? (
-                  <div className="text-destructive text-center py-8">
-                    Falha ao carregar projetos. Tente novamente.
-                  </div>
-                ) : filteredProjects && filteredProjects.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredProjects.map((project: any) => (
-                      <ProjectCard key={project.id} project={project} />
-                    ))}
-                    <NewProjectCard />
-                  </div>
-                ) : (
-                  <EmptyState />
-                )}
+                {renderProjectGrid()}
               </TabsContent>
             </Tabs>
           </div>
