@@ -80,14 +80,9 @@ export function ProjectPDF({ project, checklists }: ProjectPDFProps) {
             <View key={index} style={styles.section}>
               <Text style={styles.checklistTitle}>{checklist.title}</Text>
               {checklist.checklist_items?.map((item: any, itemIndex: number) => (
-                <View key={itemIndex} style={styles.checklistItemRow}>
-                  <View style={styles.checkbox}>
-                    <Text style={styles.checkmark}>
-                      {item.checked ? "✕" : ""}
-                    </Text>
-                  </View>
-                  <Text style={styles.text}>{item.description}</Text>
-                </View>
+                <Text key={itemIndex} style={styles.checklistItem}>
+                  {item.description}
+                </Text>
               ))}
             </View>
           ))}
