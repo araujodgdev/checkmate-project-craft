@@ -33,6 +33,7 @@ interface MeetingSchedulerProps {
   buttonSize?: "default" | "sm" | "lg" | "icon";
   buttonText?: string;
   fullWidth?: boolean;
+  className?: string; // Add this line to include className
 }
 
 export function MeetingScheduler({
@@ -42,6 +43,7 @@ export function MeetingScheduler({
   buttonSize = "sm",
   buttonText = "Agendar Reunião",
   fullWidth = false,
+  className, // Add this line to destructure className
 }: MeetingSchedulerProps) {
   const [meetingDate, setMeetingDate] = React.useState<Date | undefined>(undefined);
   const [meetingTitle, setMeetingTitle] = React.useState<string>(
@@ -95,7 +97,7 @@ export function MeetingScheduler({
         <Button 
           variant={buttonVariant} 
           size={buttonSize}
-          className={`gap-2 ${fullWidth ? "w-full" : ""}`}
+          className={`gap-2 ${fullWidth ? "w-full" : ""} ${className || ""}`} // Update this line to include className
         >
           <CalendarRange size={16} />
           <span>{buttonText}</span>
@@ -174,3 +176,4 @@ export function MeetingScheduler({
     </Dialog>
   );
 }
+
