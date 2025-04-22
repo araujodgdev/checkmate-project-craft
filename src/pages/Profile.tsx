@@ -12,8 +12,8 @@ export default function Profile() {
   if (!user) return null;
 
   return (
-    <MainLayout className="p-6 space-y-6">
-      <div className="ml-6">
+    <MainLayout className="p-6">
+      <div className="ml-6 spacey-6">
         <ProfileHeader user={user} />
         <ProfileAnalytics projects={projects || []} />
       </div>
