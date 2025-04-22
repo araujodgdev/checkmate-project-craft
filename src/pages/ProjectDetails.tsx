@@ -56,7 +56,7 @@ export default function ProjectDetails() {
         .map(checklist => checklist.id);
       setOpenCategories(initialOpenCategories);
     }
-  }, [checklists]);
+  }, [checklists, openCategories.length]);
 
   if (isLoading) {
     return <ProjectLoadingState isPublicRoute={isPublicRoute} />;

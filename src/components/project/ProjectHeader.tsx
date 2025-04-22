@@ -1,15 +1,13 @@
-
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { PenSquare, Download, Trash2, Loader2, ChevronRight, Globe, Share2 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 import { ProjectPDFDialog } from "./ProjectPDFDialog";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
-import { useLocation } from "react-router-dom";
 
 interface ProjectHeaderProps {
   project: any;
@@ -18,7 +16,7 @@ interface ProjectHeaderProps {
   setIsEditOpen: (v: boolean) => void;
   isDeletingProject: boolean;
   handleDeleteProject: () => void;
-  navigate: (to: string) => void;
+  isPublicRoute: boolean;
 }
 
 export function ProjectHeader({
@@ -28,13 +26,12 @@ export function ProjectHeader({
   setIsEditOpen,
   isDeletingProject,
   handleDeleteProject,
-  navigate
+  isPublicRoute
 }: ProjectHeaderProps) {
   const [isPDFOpen, setIsPDFOpen] = useState(false);
   const [isUpdatingVisibility, setIsUpdatingVisibility] = useState(false);
   const queryClient = useQueryClient();
-  const location = useLocation();
-  const isPublicRoute = location.pathname.includes('/public');
+  const navigate = useNavigate();
 
   const togglePublicAccess = async () => {
     try {

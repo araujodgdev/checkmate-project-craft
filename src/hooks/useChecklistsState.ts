@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { useChecklistItems } from "./useChecklistItems";
+import { useProject } from "./useProject";
 
 export function useChecklistsState(projectId: string | undefined, isPublicRoute: boolean) {
   const [filter, setFilter] = useState("all");
@@ -10,7 +11,8 @@ export function useChecklistsState(projectId: string | undefined, isPublicRoute:
   const [newItemText, setNewItemText] = useState("");
   const [addingChecklistItem, setAddingChecklistItem] = useState<string | null>(null);
   const [isAddingChecklist, setIsAddingChecklist] = useState(false);
-  const { createItem, toggleItemStatus, deleteItem } = useChecklistItems();
+  const { createItem, toggleItemStatus } = useChecklistItems();
+  const { createChecklist } = useProject(projectId);
 
   const handleTaskChange = async (taskId: string, checked: boolean) => {
     if (isPublicRoute) return;
@@ -23,12 +25,12 @@ export function useChecklistsState(projectId: string | undefined, isPublicRoute:
     }
   };
 
-  const handleCreateChecklist = async (createChecklistMutation: any) => {
+  const handleCreateChecklist = async () => {
     if (isPublicRoute || !newChecklistTitle.trim() || !projectId) return;
     
     try {
       setIsAddingChecklist(true);
-      await createChecklistMutation.mutateAsync({ 
+      await createChecklist.mutateAsync({ 
         projectId,
         title: newChecklistTitle 
       });
