@@ -23,7 +23,6 @@ export function MainLayout({ children, className, hideNav = false }: MainLayoutP
             "flex-1 flex flex-col bg-background px-4 md:px-6 space-y-6",
             "transition-all duration-300 ease-in-out",
             !hideNav && !isMobile ? "md:ml-[220px]" : "",
-            isMobile && "pr-16", // Adiciona padding à direita em dispositivos móveis
             className
           )}
         >
