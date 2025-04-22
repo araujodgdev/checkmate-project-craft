@@ -1,5 +1,4 @@
-
-import { Document, Page, Text, View, StyleSheet, PDFViewer } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 
 const styles = StyleSheet.create({
   page: {
@@ -32,6 +31,25 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginBottom: 3,
   },
+  checkbox: {
+    width: 12,
+    height: 12,
+    borderWidth: 1,
+    borderColor: '#000000',
+    marginRight: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checklistItemRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 10,
+    marginBottom: 3,
+  },
+  checkmark: {
+    fontSize: 10,
+    textAlign: 'center',
+  },
 });
 
 interface ProjectPDFProps {
@@ -62,9 +80,14 @@ export function ProjectPDF({ project, checklists }: ProjectPDFProps) {
             <View key={index} style={styles.section}>
               <Text style={styles.checklistTitle}>{checklist.title}</Text>
               {checklist.checklist_items?.map((item: any, itemIndex: number) => (
-                <Text key={itemIndex} style={styles.checklistItem}>
-                  {item.checked ? "✓" : "○"} {item.description}
-                </Text>
+                <View key={itemIndex} style={styles.checklistItemRow}>
+                  <View style={styles.checkbox}>
+                    <Text style={styles.checkmark}>
+                      {item.checked ? "✕" : ""}
+                    </Text>
+                  </View>
+                  <Text style={styles.text}>{item.description}</Text>
+                </View>
               ))}
             </View>
           ))}
