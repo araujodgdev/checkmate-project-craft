@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Sidebar } from "./sidebar";
 import { ThemeSwitch } from "../theme-switch";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type MainLayoutProps = {
   children: ReactNode;
@@ -11,15 +12,18 @@ type MainLayoutProps = {
 };
 
 export function MainLayout({ children, className, hideNav = false }: MainLayoutProps) {
+  const isMobile = useIsMobile();
+  
   return (
     <div className="min-h-screen bg-background">
       <div className="flex min-h-screen">
         {!hideNav && <Sidebar />}
         <main
           className={cn(
-            "flex-1 flex flex-col bg-background px-4 md:px-6 space-y-6",
+            "flex-1 flex flex-col bg-background",
+            isMobile ? "px-2 py-2" : "px-4 md:px-6 space-y-6",
             "transition-all duration-300 ease-in-out",
-            !hideNav ? "md:ml-[64px]" : "", // Reduced from 220px to 64px to match collapsed sidebar width
+            !hideNav ? "md:ml-[64px]" : "",
             className
           )}
         >

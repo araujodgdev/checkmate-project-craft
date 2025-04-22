@@ -2,6 +2,7 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { PieChart, BarChart, TrendingUp } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Project {
   id: string;
@@ -17,6 +18,7 @@ interface ProfileAnalyticsProps {
 }
 
 export function ProfileAnalytics({ projects }: ProfileAnalyticsProps) {
+  const isMobile = useIsMobile();
   const totalProjects = projects.length;
   const completedProjects = projects.filter(p => p.completed).length;
   const inProgressProjects = totalProjects - completedProjects;
@@ -39,7 +41,7 @@ export function ProfileAnalytics({ projects }: ProfileAnalyticsProps) {
     .slice(0, 3);
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className={`grid gap-4 ${isMobile ? "grid-cols-1" : "md:grid-cols-2 lg:grid-cols-3"}`}>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Projetos</CardTitle>

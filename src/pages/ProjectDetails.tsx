@@ -12,10 +12,12 @@ import { ProjectSummaryCard } from "@/components/project/ProjectSummaryCard";
 import { ProjectFilesManager } from "@/components/project/ProjectFilesManager";
 import { ProjectEditDialog } from "@/components/project/ProjectEditDialog";
 import { ProjectChecklistsTabs } from "@/components/project/ProjectChecklistsTabs";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function ProjectDetails() {
   const { projectId } = useParams<{projectId: string}>();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [filter, setFilter] = useState("all"); // all, incomplete, completed
   const [openCategories, setOpenCategories] = useState<string[]>([]);
   const [newChecklistTitle, setNewChecklistTitle] = useState("");
@@ -178,7 +180,7 @@ export default function ProjectDetails() {
 
   return (
     <MainLayout hideNav={isPublicRoute}>
-      <div className="container py-8 animate-fade-in">
+      <div className={`${isMobile ? "px-2" : "container"} py-8 animate-fade-in`}>
         <ProjectHeader
           project={project}
           checklists={checklists || []}
@@ -189,7 +191,7 @@ export default function ProjectDetails() {
           navigate={navigate}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className={`grid grid-cols-1 ${!isMobile && "lg:grid-cols-3"} gap-6 mb-8`}>
           <ProjectProgressCard project={project} checklists={checklists} />
           <ProjectSummaryCard checklists={checklists} />
         </div>

@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -11,6 +12,7 @@ import { format, isAfter, isBefore, addDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useChecklistItems } from "@/hooks/useChecklistItems";
 import { toast } from "sonner";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface TaskItemProps {
   id: string;
@@ -36,6 +38,8 @@ export function TaskItem({
   const [isEditing, setIsEditing] = useState(false);
   const [editedDescription, setEditedDescription] = useState(description);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showActions, setShowActions] = useState(false);
+  const isMobile = useIsMobile();
   
   const {
     toggleItemStatus,
@@ -145,7 +149,12 @@ export function TaskItem({
   const dateStatus = getDateStatus();
 
   return (
-    <div className="flex items-start gap-3 group">
+    <div 
+      className="flex items-start gap-3 group relative"
+      onMouseEnter={() => setShowActions(true)}
+      onMouseLeave={() => setShowActions(false)}
+      onClick={() => isMobile && setShowActions(!showActions)}
+    >
       <Checkbox 
         id={id} 
         checked={checked}
@@ -190,7 +199,12 @@ export function TaskItem({
                 )}
               </label>
               
-              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className={cn(
+                "flex items-center gap-1 transition-opacity",
+                (!isMobile && !showActions) ? "opacity-0 group-hover:opacity-100" : "opacity-100",
+                isMobile && "absolute top-0 right-0 bg-background/80 backdrop-blur-sm p-1 rounded-md shadow-sm",
+                !showActions && isMobile && "hidden"
+              )}>
                 <Button 
                   variant="ghost" 
                   size="icon" 
