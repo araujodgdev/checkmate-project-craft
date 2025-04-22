@@ -10,7 +10,7 @@ interface ProfileHeaderProps {
 
 export function ProfileHeader({ user }: ProfileHeaderProps) {
   return (
-    <Card className="max-w-40">
+    <Card>
       <CardHeader className="pb-2">
         <h1 className="text-2xl font-bold">Perfil</h1>
       </CardHeader>
