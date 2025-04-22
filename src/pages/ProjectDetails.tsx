@@ -46,7 +46,8 @@ export default function ProjectDetails() {
     isAddingChecklist,
     handleTaskChange,
     handleCreateChecklist,
-    handleCreateItem
+    handleCreateItem,
+    handleDeleteChecklist
   } = useChecklistsState(projectId, isPublicRoute);
 
   useEffect(() => {
@@ -102,7 +103,9 @@ export default function ProjectDetails() {
           handleCreateChecklist={handleCreateChecklist}
           handleCreateItem={handleCreateItem}
           handleTaskChange={handleTaskChange}
+          handleDeleteChecklist={handleDeleteChecklist}
           isPublicRoute={isPublicRoute}
+          createChecklist={useProject(projectId).createChecklist}
         />
 
         {!isPublicRoute && (

@@ -12,7 +12,7 @@ export function useChecklistsState(projectId: string | undefined, isPublicRoute:
   const [addingChecklistItem, setAddingChecklistItem] = useState<string | null>(null);
   const [isAddingChecklist, setIsAddingChecklist] = useState(false);
   const { createItem, toggleItemStatus } = useChecklistItems();
-  const { createChecklist } = useProject(projectId);
+  const { createChecklist, deleteChecklist } = useProject(projectId);
 
   const handleTaskChange = async (taskId: string, checked: boolean) => {
     if (isPublicRoute) return;
@@ -41,6 +41,18 @@ export function useChecklistsState(projectId: string | undefined, isPublicRoute:
       toast.error("Erro ao criar checklist");
     } finally {
       setIsAddingChecklist(false);
+    }
+  };
+
+  const handleDeleteChecklist = async (checklistId: string) => {
+    if (isPublicRoute) return;
+    
+    try {
+      await deleteChecklist.mutateAsync(checklistId);
+      toast.success("Checklist excluído com sucesso");
+    } catch (error) {
+      console.error("Erro ao excluir checklist:", error);
+      toast.error("Erro ao excluir checklist");
     }
   };
 
@@ -76,6 +88,7 @@ export function useChecklistsState(projectId: string | undefined, isPublicRoute:
     isAddingChecklist,
     handleTaskChange,
     handleCreateChecklist,
-    handleCreateItem
+    handleCreateItem,
+    handleDeleteChecklist
   };
 }
