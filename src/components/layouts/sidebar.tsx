@@ -1,9 +1,8 @@
-
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { CheckCircle, ChevronLeft, ChevronRight, GripVertical, Home, List, LogOut, Settings, User } from "lucide-react";
+import { CheckCircle, ChevronLeft, ChevronRight, GripVertical, Home, User, LogOut } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuthStore } from "@/lib/store";
 
@@ -22,8 +21,6 @@ export function Sidebar() {
 
   const navItems = [
     { label: "Dashboard", icon: Home, href: "/dashboard" },
-    { label: "Projects", icon: List, href: "/projects" },
-    { label: "Settings", icon: Settings, href: "/settings" },
   ];
 
   const handleLogout = async () => {
@@ -115,7 +112,6 @@ export function Sidebar() {
           isDragging ? "" : "duration-300"
         )}
       >
-        {/* Sidebar content remains igual */}
         <div className="flex items-center p-4 border-b border-border min-w-0">
           <Link
             to="/"
@@ -195,14 +191,14 @@ export function Sidebar() {
                       <User size={20} className="flex-shrink-0" />
                       {!collapsed && (
                         <span className="ml-2 transition-all duration-300 truncate">
-                          Profile
+                          Perfil
                         </span>
                       )}
                     </Button>
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent side="right" className={cn(!collapsed && "hidden")}>
-                  Profile
+                  Perfil
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -220,7 +216,7 @@ export function Sidebar() {
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="top">
-                    Logout
+                    Sair
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -239,14 +235,13 @@ export function Sidebar() {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="right">
-                  Logout
+                  Sair
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           )}
         </div>
       </div>
-      {/* Resizer handle e indicators */}
       {!collapsed && (
         <button
           type="button"
@@ -293,6 +288,3 @@ export function Sidebar() {
     </>
   );
 }
-
-// Atenção: este arquivo está ficando muito longo! Considere pedir refatoração em arquivos menores após os ajustes.
-

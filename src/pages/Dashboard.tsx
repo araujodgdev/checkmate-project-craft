@@ -15,12 +15,20 @@ import { useState } from "react";
 export default function Dashboard() {
   const { projects, isLoading, error } = useProjects();
   const [tab, setTab] = useState<"all" | "active" | "completed">("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  // Filtros
+  // Filtros com busca
   const filteredProjects = (projects ?? []).filter((project: any) => {
-    if (tab === "active") return !project.completed;
-    if (tab === "completed") return project.completed;
-    return true; // All
+    const matchesTab = tab === "all" || 
+      (tab === "active" ? !project.completed : project.completed);
+    
+    const matchesSearch = project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      project.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      project.technologies?.some((tech: string) => 
+        tech.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+
+    return matchesTab && matchesSearch;
   });
 
   return (
@@ -61,6 +69,8 @@ export default function Dashboard() {
                     type="search"
                     placeholder="Buscar projetos..."
                     className="pl-8 bg-background"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
                 <Button variant="outline" size="icon">
