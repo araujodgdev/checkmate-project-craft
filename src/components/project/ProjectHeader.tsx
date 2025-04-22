@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { PenSquare, Download, Trash2, Loader2, ChevronRight, Globe } from "lucide-react";
@@ -7,6 +8,7 @@ import { ProjectPDFDialog } from "./ProjectPDFDialog";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface ProjectHeaderProps {
   project: any;
@@ -29,16 +31,28 @@ export function ProjectHeader({
 }: ProjectHeaderProps) {
   const [isPDFOpen, setIsPDFOpen] = useState(false);
   const [isUpdatingVisibility, setIsUpdatingVisibility] = useState(false);
+  const queryClient = useQueryClient();
 
   const togglePublicAccess = async () => {
     try {
       setIsUpdatingVisibility(true);
-      const { error } = await supabase
+      const { error, data } = await supabase
         .from('projects')
         .update({ is_public: !project.is_public })
-        .eq('id', project.id);
+        .eq('id', project.id)
+        .select()
+        .single();
 
       if (error) throw error;
+
+      // Atualiza o cache do React Query com os novos dados
+      queryClient.setQueryData(["project", project.id], {
+        ...project,
+        is_public: !project.is_public
+      });
+
+      // Invalida a query para garantir que os dados sejam atualizados
+      queryClient.invalidateQueries({ queryKey: ["project", project.id] });
 
       toast.success(project.is_public ? 
         "Projeto definido como privado" : 
