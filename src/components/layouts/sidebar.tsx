@@ -229,18 +229,18 @@ export function Sidebar() {
   // Mobile sidebar using Sheet component
   if (isMobile) {
     return (
-      <>
-        <SheetTrigger asChild className="fixed z-50 top-4 left-4 md:hidden">
-          <Button variant="outline" size="icon" className="rounded-full shadow-md">
-            <Home size={18} />
-          </Button>
-        </SheetTrigger>
+      <div className="md:hidden">
         <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="outline" size="icon" className="fixed z-50 top-4 left-4 rounded-full shadow-md">
+              <Home size={18} />
+            </Button>
+          </SheetTrigger>
           <SheetContent side="left" className="p-0 w-[240px]">
             {sidebarContent}
           </SheetContent>
         </Sheet>
-      </>
+      </div>
     );
   }
 
