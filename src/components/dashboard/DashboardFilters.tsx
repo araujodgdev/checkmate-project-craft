@@ -57,11 +57,11 @@ export function DashboardFilters({
               key={type}
               checked={selectedTypes.includes(type)}
               onCheckedChange={(checked) => {
-                setSelectedTypes(prev => 
-                  checked 
-                    ? [...prev, type]
-                    : prev.filter(t => t !== type)
-                );
+                if (checked) {
+                  setSelectedTypes([...selectedTypes, type]);
+                } else {
+                  setSelectedTypes(selectedTypes.filter(t => t !== type));
+                }
               }}
             >
               {type}
@@ -76,11 +76,11 @@ export function DashboardFilters({
               key={tech}
               checked={selectedTechs.includes(tech)}
               onCheckedChange={(checked) => {
-                setSelectedTechs(prev => 
-                  checked 
-                    ? [...prev, tech]
-                    : prev.filter(t => t !== tech)
-                );
+                if (checked) {
+                  setSelectedTechs([...selectedTechs, tech]);
+                } else {
+                  setSelectedTechs(selectedTechs.filter(t => t !== tech));
+                }
               }}
             >
               {tech}
