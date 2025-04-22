@@ -97,9 +97,13 @@
 }
 
 /* Ajuste: gradiente azul escuro, suave para dark, landing */
-body.dark,
-html.dark {
+.dark body {
   background: linear-gradient(135deg, #1A1F2C 0%, #22263B 60%, #28355a 100%) !important;
+}
+
+/* Light mode background gradient */
+body {
+  background: linear-gradient(135deg, #f0f4ff 0%, #dbe4ff 60%, #c7d2fe 100%);
 }
 
 /* Remover purple de hover (usa tons de azul para hover no botão) */
