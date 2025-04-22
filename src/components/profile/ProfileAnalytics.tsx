@@ -1,4 +1,3 @@
-
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { PieChart, BarChart, TrendingUp } from "lucide-react";
@@ -41,7 +40,7 @@ export function ProfileAnalytics({ projects }: ProfileAnalyticsProps) {
     .slice(0, 3);
 
   return (
-    <div className={`grid gap-4 ${isMobile ? "grid-cols-1" : "md:grid-cols-2 lg:grid-cols-3"}`}>
+    <div className={`grid gap-4 ${isMobile ? "grid-cols-1 px-2" : "md:grid-cols-2 lg:grid-cols-3 px-0"}`}>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Projetos</CardTitle>
