@@ -1,4 +1,3 @@
-
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
@@ -28,11 +27,6 @@ export default function Landing() {
       icon: "🔄",
       title: "Atualizações em Tempo Real",
       description: "Sincronização automática de mudanças entre a equipe"
-    },
-    {
-      icon: "🤖",
-      title: "Geração por IA",
-      description: "Recomendações inteligentes para seu desenvolvimento"
     }
   ];
 
@@ -107,7 +101,7 @@ export default function Landing() {
             <p className="text-center text-gray-300 mb-12">
               O CheckMate fornece tudo que os desenvolvedores precisam para gerenciar projetos de forma eficiente.
             </p>
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {features.map((feature) => (
                 <div key={feature.title} className="bg-[#22263B] p-6 rounded-lg border border-blue-900/30">
                   <div className="text-4xl mb-4">{feature.icon}</div>
@@ -115,40 +109,6 @@ export default function Landing() {
                   <p className="text-gray-400">{feature.description}</p>
                 </div>
               ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Feature Highlight Section */}
-        <div className="py-20 px-4">
-          <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-12">
-            <div className="md:w-1/2">
-              <img
-                src="/lovable-uploads/d4c4b5f0-0f4a-4454-8213-3f8e866dd996.png"
-                alt="Developer Workflow"
-                className="rounded-lg shadow-2xl"
-              />
-            </div>
-            <div className="md:w-1/2 space-y-6">
-              <h2 className="text-3xl font-bold text-white">
-                Feito para Fluxos de Desenvolvimento
-              </h2>
-              <p className="text-gray-300">
-                O CheckMate é projetado especificamente para times de desenvolvimento de software. Desde o planejamento até a implementação, nós te fornecemos fluxos de trabalho que se adaptam às suas necessidades.
-              </p>
-              <ul className="space-y-4">
-                {[
-                  "Templates de desenvolvimento pré-configurados",
-                  "Integração com GitHub, GitLab e mais",
-                  "Controle de acesso por função e permissões",
-                  "Armazenamento seguro para dados sensíveis do projeto"
-                ].map((item) => (
-                  <li key={item} className="flex items-center gap-3 text-gray-300">
-                    <CheckCircle className="text-blue-400 h-5 w-5 flex-shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
             </div>
           </div>
         </div>
