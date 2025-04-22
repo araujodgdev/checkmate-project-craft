@@ -19,7 +19,7 @@ export function MainLayout({ children, className, hideNav = false }: MainLayoutP
           className={cn(
             "flex-1 flex flex-col bg-background px-4 md:px-6 space-y-6",
             "transition-all duration-300 ease-in-out",
-            !hideNav ? "pl-[220px]" : "",
+            !hideNav ? "md:ml-[220px]" : "",
             className
           )}
         >
