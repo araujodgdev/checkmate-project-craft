@@ -8,7 +8,7 @@ import { useAuthStore } from "@/lib/store";
 
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
-  const [width, setWidth] = useState(256); // Default width
+  const [width, setWidth] = useState(220); // Reduced from 256 to 220 pixels
   const [isDragging, setIsDragging] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const minWidth = 180;

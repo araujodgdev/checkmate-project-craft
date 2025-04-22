@@ -11,7 +11,7 @@ type MainLayoutProps = {
 };
 
 export function MainLayout({ children, className, hideNav = false }: MainLayoutProps) {
-  const sidebarWidth = 256;
+  const sidebarWidth = 220; // Reduced from 256 to 220 pixels
   const sidebarCollapsedWidth = 64;
 
   return (
@@ -20,7 +20,7 @@ export function MainLayout({ children, className, hideNav = false }: MainLayoutP
         {!hideNav && <Sidebar />}
         <main
           className={cn(
-            "flex-1 flex flex-col bg-background px-4 md:px-6 space-y-6",  // Increased padding and added vertical spacing
+            "flex-1 flex flex-col bg-background px-4 md:px-6 space-y-6",
             "transition-all duration-300 ease-in-out",
             !hideNav ? `pl-[${sidebarWidth}px]` : "",
             className
@@ -38,4 +38,3 @@ export function MainLayout({ children, className, hideNav = false }: MainLayoutP
     </div>
   );
 }
-
