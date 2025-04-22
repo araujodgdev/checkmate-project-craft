@@ -15,6 +15,7 @@ import AuthPage from "@/pages/AuthPage";
 import ProjectDetails from "@/pages/ProjectDetails";
 import NewProject from "@/pages/NewProject";
 import NotFound from "@/pages/NotFound";
+import Profile from "@/pages/Profile";
 
 const queryClient = new QueryClient({
 	defaultOptions: {
@@ -48,6 +49,14 @@ const App = () => {
 								}
 							/>
 							<Route path="/auth" element={<AuthPage />} />
+							<Route
+								path="/profile"
+								element={
+									<ProtectedRoute>
+										<Profile />
+									</ProtectedRoute>
+								}
+							/>
 							<Route
 								path="/projects"
 								element={<Navigate to="/projects" replace />}
