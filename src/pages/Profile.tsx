@@ -13,8 +13,10 @@ export default function Profile() {
 
   return (
     <MainLayout className="p-6 space-y-6">
-      <ProfileHeader user={user} />
-      <ProfileAnalytics projects={projects || []} />
+      <div className="ml-6">
+        <ProfileHeader user={user} />
+        <ProfileAnalytics projects={projects || []} />
+      </div>
     </MainLayout>
   );
 }
