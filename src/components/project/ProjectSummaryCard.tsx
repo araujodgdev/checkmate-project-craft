@@ -1,5 +1,5 @@
 
-import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import React from "react";
 
@@ -13,7 +13,7 @@ export function ProjectSummaryCard({ checklists }: { checklists: any[] }) {
   }).length || 0;
 
   return (
-    <Card>
+    <Card className="ml-6"> {/* Added margin-left to 6 */}
       <CardHeader className="pb-3">
         <CardTitle>Resumo das Tarefas</CardTitle>
       </CardHeader>
