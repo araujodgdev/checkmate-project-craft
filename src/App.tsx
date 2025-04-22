@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -69,6 +68,10 @@ const App = () => {
 										<ProjectDetails />
 									</ProtectedRoute>
 								}
+							/>
+							<Route
+								path="/projects/:projectId/public"
+								element={<ProjectDetails />}
 							/>
 							<Route
 								path="/new-project"

@@ -1,7 +1,6 @@
-
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { PenSquare, Download, Trash2, Loader2, ChevronRight, Globe } from "lucide-react";
+import { PenSquare, Download, Trash2, Loader2, ChevronRight, Globe, Share2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import React, { useState } from "react";
 import { ProjectPDFDialog } from "./ProjectPDFDialog";
@@ -45,13 +44,11 @@ export function ProjectHeader({
 
       if (error) throw error;
 
-      // Atualiza o cache do React Query com os novos dados
       queryClient.setQueryData(["project", project.id], {
         ...project,
         is_public: !project.is_public
       });
 
-      // Invalida a query para garantir que os dados sejam atualizados
       queryClient.invalidateQueries({ queryKey: ["project", project.id] });
 
       toast.success(project.is_public ? 
@@ -64,6 +61,12 @@ export function ProjectHeader({
     } finally {
       setIsUpdatingVisibility(false);
     }
+  };
+
+  const handleShare = () => {
+    const publicUrl = `${window.location.origin}/projects/${project.id}/public`;
+    navigator.clipboard.writeText(publicUrl);
+    toast.success("Link copiado para a área de transferência!");
   };
 
   return (
@@ -90,6 +93,17 @@ export function ProjectHeader({
               <span className="text-sm text-muted-foreground">
                 {project.is_public ? "Projeto público" : "Projeto privado"}
               </span>
+              {project.is_public && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2 ml-2"
+                  onClick={handleShare}
+                >
+                  <Share2 size={16} />
+                  <span>Compartilhar</span>
+                </Button>
+              )}
             </div>
           </div>
         </div>
