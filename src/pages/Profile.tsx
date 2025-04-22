@@ -14,8 +14,8 @@ export default function Profile() {
   if (!user) return null;
 
   return (
-    <MainLayout className={isMobile ? "p-2" : "p-6"}>
-      <div className={`${isMobile ? "mx-0" : "ml-6"} space-y-6`}>
+    <MainLayout className={isMobile ? "p-1" : "p-6"}>
+      <div className={`${isMobile ? "mx-0" : "ml-6"} space-y-4`}>
         <ProfileHeader user={user} />
         <ProfileAnalytics projects={projects || []} />
       </div>

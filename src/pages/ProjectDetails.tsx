@@ -86,6 +86,18 @@ export default function ProjectDetails() {
     }
   };
 
+  const handleDeleteChecklist = async (checklistId: string) => {
+    if (isPublicRoute) return; // Não permitir alterações em modo público
+    
+    try {
+      await deleteChecklist.mutateAsync(checklistId);
+      toast.success("Checklist excluído com sucesso");
+    } catch (error) {
+      console.error("Erro ao excluir checklist:", error);
+      toast.error("Erro ao excluir checklist");
+    }
+  };
+
   const handleCreateItem = async (checklistId: string) => {
     if (isPublicRoute) return; // Não permitir alterações em modo público
     if (!newItemText.trim()) return;
@@ -180,7 +192,7 @@ export default function ProjectDetails() {
 
   return (
     <MainLayout hideNav={isPublicRoute}>
-      <div className={`${isMobile ? "px-2" : "container"} py-8 animate-fade-in`}>
+      <div className={`${isMobile ? "px-1" : "container"} py-4 animate-fade-in`}>
         <ProjectHeader
           project={project}
           checklists={checklists || []}
@@ -191,7 +203,7 @@ export default function ProjectDetails() {
           navigate={navigate}
         />
 
-        <div className={`grid grid-cols-1 ${!isMobile && "lg:grid-cols-3"} gap-6 mb-8`}>
+        <div className={`grid ${isMobile ? "grid-cols-1 gap-4" : "grid-cols-1 lg:grid-cols-3 gap-6"} mb-6`}>
           <ProjectProgressCard project={project} checklists={checklists} />
           <ProjectSummaryCard checklists={checklists} />
         </div>
@@ -215,6 +227,7 @@ export default function ProjectDetails() {
           handleCreateChecklist={handleCreateChecklist}
           handleCreateItem={handleCreateItem}
           handleTaskChange={handleTaskChange}
+          handleDeleteChecklist={handleDeleteChecklist}
           isPublicRoute={isPublicRoute}
         />
 

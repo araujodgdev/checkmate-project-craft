@@ -1,7 +1,7 @@
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ClipboardCheck, SquarePen, Filter, Loader2, Plus } from "lucide-react";
+import { ClipboardCheck, SquarePen, Filter, Loader2, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
@@ -9,6 +9,17 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 import React from "react";
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface ProjectChecklistsTabsProps {
   checklists: any[];
@@ -27,6 +38,7 @@ interface ProjectChecklistsTabsProps {
   handleCreateChecklist: () => void;
   handleCreateItem: (checklistId: string) => void;
   handleTaskChange: (taskId: string, checked: boolean) => void;
+  handleDeleteChecklist: (checklistId: string) => void;
   isPublicRoute?: boolean;
 }
 
@@ -47,6 +59,7 @@ export function ProjectChecklistsTabs({
   handleCreateChecklist,
   handleCreateItem,
   handleTaskChange,
+  handleDeleteChecklist,
   isPublicRoute
 }: ProjectChecklistsTabsProps) {
   const filteredChecklists = checklists?.map(checklist => ({
@@ -78,7 +91,7 @@ export function ProjectChecklistsTabs({
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <CardTitle>Checklists do Projeto</CardTitle>
                 {!isPublicRoute && (
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <Button variant="outline" size="sm" onClick={() => setOpenCategories(checklists?.map(c => c.id) || [])}>
                     Expandir Todos
                   </Button>
@@ -139,6 +152,38 @@ export function ProjectChecklistsTabs({
                             width: `${progress}%`
                           }} />
                             </div>
+                            {!isPublicRoute && (
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-destructive hover:text-destructive/90 hover:bg-destructive/10"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    <Trash2 size={16} />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Excluir checklist</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Tem certeza que deseja excluir o checklist "{checklist.title}"?
+                                      Esta ação não pode ser desfeita e todos os itens serão excluídos.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                    <AlertDialogAction 
+                                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                      onClick={() => handleDeleteChecklist(checklist.id)}
+                                    >
+                                      Excluir
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            )}
                           </div>
                         </div>
                       </CollapsibleTrigger>

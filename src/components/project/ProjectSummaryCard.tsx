@@ -1,9 +1,11 @@
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { useIsMobile } from "@/hooks/use-mobile";
 import React from "react";
 
 export function ProjectSummaryCard({ checklists }: { checklists: any[] }) {
+  const isMobile = useIsMobile();
   const allItems = checklists?.flatMap(c => c.checklist_items || []) || [];
   const completedItems = allItems.filter(item => item.checked);
   const totalItems = allItems.length;
@@ -13,7 +15,7 @@ export function ProjectSummaryCard({ checklists }: { checklists: any[] }) {
   }).length || 0;
 
   return (
-    <Card className="ml-6"> {/* Added margin-left to 6 */}
+    <Card className={isMobile ? "" : "ml-6"}>
       <CardHeader className="pb-3">
         <CardTitle>Resumo das Tarefas</CardTitle>
       </CardHeader>
