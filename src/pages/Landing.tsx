@@ -1,38 +1,32 @@
-
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
 import { ThemeSwitch } from "@/components/theme-switch";
 import Typewriter from 'typewriter-effect';
-
 export default function Landing() {
   const navigate = useNavigate();
-
   const handleRegisterClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    navigate("/auth", { state: { tab: "register" } });
+    navigate("/auth", {
+      state: {
+        tab: "register"
+      }
+    });
   };
-
-  const features = [
-    {
-      icon: "⚡",
-      title: "Checklists Inteligentes",
-      description: "Criação automática de checklists baseados no seu projeto"
-    },
-    {
-      icon: "🤝",
-      title: "Colaboração em Equipe",
-      description: "Acompanhamento em tempo real do progresso do projeto"
-    },
-    {
-      icon: "🔄",
-      title: "Atualizações em Tempo Real",
-      description: "Sincronização automática de mudanças entre a equipe"
-    }
-  ];
-
-  return (
-    <div className="min-h-screen flex flex-col">
+  const features = [{
+    icon: "⚡",
+    title: "Checklists Inteligentes",
+    description: "Criação automática de checklists baseados no seu projeto"
+  }, {
+    icon: "🤝",
+    title: "Colaboração em Equipe",
+    description: "Acompanhamento em tempo real do progresso do projeto"
+  }, {
+    icon: "🔄",
+    title: "Atualizações em Tempo Real",
+    description: "Sincronização automática de mudanças entre a equipe"
+  }];
+  return <div className="min-h-screen flex flex-col">
       {/* Header */}
       <header className="w-full flex justify-between items-center px-8 py-6">
         <div className="flex items-center gap-2">
@@ -46,12 +40,7 @@ export default function Landing() {
               Entrar
             </Button>
           </Link>
-          <Button
-            className="bg-blue-500 hover:bg-blue-600 text-white"
-            onClick={handleRegisterClick}
-          >
-            Começar Agora
-          </Button>
+          
         </div>
       </header>
 
@@ -61,34 +50,20 @@ export default function Landing() {
           <h1 className="text-5xl font-bold text-blue-950 dark:text-white mb-6">
             Gerenciamento Eficiente para
             <div className="text-blue-400">
-              <Typewriter
-                options={{
-                  strings: ['Desenvolvedores', 'Times de Tech', 'Projetos Ágeis'],
-                  autoStart: true,
-                  loop: true,
-                }}
-              />
+              <Typewriter options={{
+              strings: ['Desenvolvedores', 'Times de Tech', 'Projetos Ágeis'],
+              autoStart: true,
+              loop: true
+            }} />
             </div>
           </h1>
           <p className="text-xl text-gray-700 dark:text-gray-300 mb-8">
             Nunca perca um passo importante no desenvolvimento. Organize, acompanhe e gerencie seus projetos com inteligência.
           </p>
           <div className="flex gap-4 justify-center">
-            <Button
-              size="lg"
-              className="bg-blue-500 hover:bg-blue-600 text-white"
-              onClick={handleRegisterClick}
-            >
-              Comece Gratuitamente
-            </Button>
+            
             <Link to="/auth">
-              <Button
-                size="lg"
-                variant="outline"
-                className="text-blue-900 dark:text-blue-100 border-blue-400 hover:bg-blue-900/20"
-              >
-                Ver Demonstração
-              </Button>
+              
             </Link>
           </div>
         </div>
@@ -103,13 +78,11 @@ export default function Landing() {
               O CheckMate fornece tudo que os desenvolvedores precisam para gerenciar projetos de forma eficiente.
             </p>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {features.map((feature) => (
-                <div key={feature.title} className="bg-white dark:bg-[#22263B] p-6 rounded-lg border border-blue-900/30">
+              {features.map(feature => <div key={feature.title} className="bg-white dark:bg-[#22263B] p-6 rounded-lg border border-blue-900/30">
                   <div className="text-4xl mb-4">{feature.icon}</div>
                   <h3 className="text-xl font-semibold text-blue-900 dark:text-blue-100 mb-2">{feature.title}</h3>
                   <p className="text-gray-600 dark:text-gray-400">{feature.description}</p>
-                </div>
-              ))}
+                </div>)}
             </div>
           </div>
         </div>
@@ -123,11 +96,7 @@ export default function Landing() {
             <p className="text-xl text-white/90 mb-8">
               Junte-se a milhares de desenvolvedores que usam o CheckMate para gerenciar seus projetos de forma mais eficiente.
             </p>
-            <Button
-              size="lg"
-              className="bg-white text-blue-600 hover:bg-blue-50"
-              onClick={handleRegisterClick}
-            >
+            <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50" onClick={handleRegisterClick}>
               Começar Agora
             </Button>
           </div>
@@ -180,6 +149,5 @@ export default function Landing() {
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 }
