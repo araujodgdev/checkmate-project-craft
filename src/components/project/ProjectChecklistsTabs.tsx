@@ -1,4 +1,3 @@
-
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ClipboardCheck, SquarePen, Filter, Loader2, Plus } from "lucide-react";
@@ -9,7 +8,6 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 import React from "react";
-
 interface ProjectChecklistsTabsProps {
   checklists: any[];
   filter: string;
@@ -28,7 +26,6 @@ interface ProjectChecklistsTabsProps {
   handleCreateItem: (checklistId: string) => void;
   handleTaskChange: (taskId: string, checked: boolean) => void;
 }
-
 export function ProjectChecklistsTabs({
   checklists,
   filter,
@@ -45,7 +42,7 @@ export function ProjectChecklistsTabs({
   isAddingChecklist,
   handleCreateChecklist,
   handleCreateItem,
-  handleTaskChange,
+  handleTaskChange
 }: ProjectChecklistsTabsProps) {
   // Filtros e estados já estão controlados no componente pai
   const filteredChecklists = checklists?.map(checklist => ({
@@ -55,11 +52,9 @@ export function ProjectChecklistsTabs({
       if (filter === "incomplete") return !item.checked;
       if (filter === "completed") return item.checked;
       return true;
-    }),
+    })
   })) || [];
-
-  return (
-    <div className="mb-6">
+  return <div className="mb-6">
       <Tabs defaultValue="checklist" className="w-full">
         <TabsList className="mb-4">
           <TabsTrigger value="checklist" className="flex items-center gap-2">
@@ -78,9 +73,7 @@ export function ProjectChecklistsTabs({
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <CardTitle>Checklists do Projeto</CardTitle>
                 <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" onClick={() => 
-                    setOpenCategories(checklists?.map(c => c.id) || [])
-                  }>
+                  <Button variant="outline" size="sm" onClick={() => setOpenCategories(checklists?.map(c => c.id) || [])}>
                     Expandir Todos
                   </Button>
                   <Button variant="outline" size="sm" onClick={() => setOpenCategories([])}>
@@ -88,11 +81,7 @@ export function ProjectChecklistsTabs({
                   </Button>
                   <Button variant="outline" size="sm" className="flex items-center gap-2">
                     <Filter size={14} />
-                    <select 
-                      className="bg-transparent outline-none"
-                      value={filter}
-                      onChange={(e) => setFilter(e.target.value)}
-                    >
+                    <select className="bg-transparent outline-none" value={filter} onChange={e => setFilter(e.target.value)}>
                       <option value="all">Todas Tarefas</option>
                       <option value="incomplete">Pendentes</option>
                       <option value="completed">Concluídas</option>
@@ -103,33 +92,22 @@ export function ProjectChecklistsTabs({
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {filteredChecklists?.map((checklist) => {
-                  const totalItems = checklist.checklist_items?.length || 0;
-                  const completedItems = checklist.checklist_items?.filter(item => item.checked).length || 0;
-                  const progress = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
-                  return (
-                    <Collapsible 
-                      key={checklist.id} 
-                      open={openCategories.includes(checklist.id)}
-                      className="border rounded-md"
-                    >
+                {filteredChecklists?.map(checklist => {
+                const totalItems = checklist.checklist_items?.length || 0;
+                const completedItems = checklist.checklist_items?.filter(item => item.checked).length || 0;
+                const progress = totalItems > 0 ? Math.round(completedItems / totalItems * 100) : 0;
+                return <Collapsible key={checklist.id} open={openCategories.includes(checklist.id)} className="border rounded-md">
                       <CollapsibleTrigger asChild>
-                        <div 
-                          className="flex items-center justify-between p-4 cursor-pointer hover:bg-muted/50"
-                          onClick={() => {
-                            const alreadyOpen = openCategories.includes(checklist.id);
-                            if (alreadyOpen) {
-                              setOpenCategories(openCategories.filter(id => id !== checklist.id));
-                            } else {
-                              setOpenCategories([...openCategories, checklist.id]);
-                            }
-                          }}
-                        >
+                        <div className="flex items-center justify-between p-4 cursor-pointer hover:bg-muted/50" onClick={() => {
+                      const alreadyOpen = openCategories.includes(checklist.id);
+                      if (alreadyOpen) {
+                        setOpenCategories(openCategories.filter(id => id !== checklist.id));
+                      } else {
+                        setOpenCategories([...openCategories, checklist.id]);
+                      }
+                    }}>
                           <div className="flex items-center gap-3">
-                            <svg className={cn(
-                              "h-5 w-5 text-muted-foreground transition-transform",
-                              openCategories.includes(checklist.id) ? "transform rotate-0" : "transform rotate-[-90deg]"
-                            )} viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 9l6 6 6-6"></path></svg>
+                            <svg className={cn("h-5 w-5 text-muted-foreground transition-transform", openCategories.includes(checklist.id) ? "transform rotate-0" : "transform rotate-[-90deg]")} viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 9l6 6 6-6"></path></svg>
                             <div>
                               <h3 className="font-medium">{checklist.title}</h3>
                               <div className="text-sm text-muted-foreground">
@@ -140,13 +118,9 @@ export function ProjectChecklistsTabs({
                           <div className="flex items-center gap-3">
                             <div className="text-sm font-medium">{progress}%</div>
                             <div className="w-20 h-1.5 bg-muted rounded-full overflow-hidden">
-                              <div 
-                                className={cn(
-                                  "h-full transition-all",
-                                  progress === 100 ? "bg-success" : "bg-primary"
-                                )}
-                                style={{ width: `${progress}%` }}
-                              />
+                              <div className={cn("h-full transition-all", progress === 100 ? "bg-success" : "bg-primary")} style={{
+                            width: `${progress}%`
+                          }} />
                             </div>
                           </div>
                         </div>
@@ -155,80 +129,38 @@ export function ProjectChecklistsTabs({
                         <div className="px-4 pb-4">
                           <Separator className="mb-4" />
                           <div className="space-y-3">
-                            {checklist.checklist_items?.map((item: any) => (
-                              <div key={item.id} className="flex items-start gap-3">
-                                <input 
-                                  type="checkbox"
-                                  checked={item.checked}
-                                  onChange={(e) => handleTaskChange(item.id, e.target.checked)}
-                                  className="mt-0.5"
-                                  id={item.id}
-                                />
+                            {checklist.checklist_items?.map((item: any) => <div key={item.id} className="flex items-center gap-3">
+                                <input type="checkbox" checked={item.checked} onChange={e => handleTaskChange(item.id, e.target.checked)} className="mt-0.5" id={item.id} />
                                 <div className="flex-1">
-                                  <label
-                                    htmlFor={item.id}
-                                    className={cn(
-                                      "text-sm font-medium cursor-pointer",
-                                      item.checked && "line-through text-muted-foreground"
-                                    )}
-                                  >
+                                  <label htmlFor={item.id} className={cn("text-sm font-medium cursor-pointer", item.checked && "line-through text-muted-foreground")}>
                                     {item.description}
                                   </label>
                                 </div>
-                              </div>
-                            ))}
-                            {checklist.checklist_items?.length === 0 && (
-                              <div className="text-sm text-muted-foreground text-center py-2">
+                              </div>)}
+                            {checklist.checklist_items?.length === 0 && <div className="text-sm text-muted-foreground text-center py-2">
                                 Nenhuma tarefa encontrada para este critério
-                              </div>
-                            )}
-                            {addingChecklistItem === checklist.id ? (
-                              <div className="flex items-center gap-2 mt-4">
-                                <Input
-                                  type="text"
-                                  placeholder="Descrição da nova tarefa"
-                                  value={newItemText}
-                                  onChange={(e) => setNewItemText(e.target.value)}
-                                  className="flex-1"
-                                />
-                                <Button 
-                                  size="sm" 
-                                  onClick={() => handleCreateItem(checklist.id)}
-                                  disabled={!newItemText.trim()}
-                                >
+                              </div>}
+                            {addingChecklistItem === checklist.id ? <div className="flex items-center gap-2 mt-4">
+                                <Input type="text" placeholder="Descrição da nova tarefa" value={newItemText} onChange={e => setNewItemText(e.target.value)} className="flex-1" />
+                                <Button size="sm" onClick={() => handleCreateItem(checklist.id)} disabled={!newItemText.trim()}>
                                   Adicionar
                                 </Button>
-                                <Button 
-                                  size="sm" 
-                                  variant="outline" 
-                                  onClick={() => setAddingChecklistItem(null)}
-                                >
+                                <Button size="sm" variant="outline" onClick={() => setAddingChecklistItem(null)}>
                                   Cancelar
                                 </Button>
-                              </div>
-                            ) : (
-                              <Button 
-                                variant="ghost" 
-                                size="sm"
-                                className="mt-3 w-full justify-start text-muted-foreground"
-                                onClick={() => setAddingChecklistItem(checklist.id)}
-                              >
+                              </div> : <Button variant="ghost" size="sm" className="mt-3 w-full justify-start text-muted-foreground" onClick={() => setAddingChecklistItem(checklist.id)}>
                                 <Plus size={16} className="mr-2" />
                                 Adicionar tarefa
-                              </Button>
-                            )}
+                              </Button>}
                           </div>
                         </div>
                       </CollapsibleContent>
-                    </Collapsible>
-                  );
-                })}
+                    </Collapsible>;
+              })}
                 
-                {filteredChecklists?.length === 0 && (
-                  <div className="text-center py-8 text-muted-foreground">
+                {filteredChecklists?.length === 0 && <div className="text-center py-8 text-muted-foreground">
                     Nenhum checklist encontrado. Crie seu primeiro checklist!
-                  </div>
-                )}
+                  </div>}
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button className="w-full" variant="outline">
@@ -248,30 +180,18 @@ export function ProjectChecklistsTabs({
                         <label htmlFor="title" className="text-sm font-medium">
                           Título do checklist
                         </label>
-                        <Input
-                          id="title"
-                          placeholder="Ex: Requisitos funcionais"
-                          value={newChecklistTitle}
-                          onChange={(e) => setNewChecklistTitle(e.target.value)}
-                        />
+                        <Input id="title" placeholder="Ex: Requisitos funcionais" value={newChecklistTitle} onChange={e => setNewChecklistTitle(e.target.value)} />
                       </div>
                     </div>
                     <DialogFooter>
                       <DialogClose asChild>
                         <Button variant="outline">Cancelar</Button>
                       </DialogClose>
-                      <Button 
-                        onClick={handleCreateChecklist} 
-                        disabled={!newChecklistTitle.trim() || isAddingChecklist}
-                      >
-                        {isAddingChecklist ? (
-                          <>
+                      <Button onClick={handleCreateChecklist} disabled={!newChecklistTitle.trim() || isAddingChecklist}>
+                        {isAddingChecklist ? <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             Criando...
-                          </>
-                        ) : (
-                          'Criar checklist'
-                        )}
+                          </> : 'Criar checklist'}
                       </Button>
                     </DialogFooter>
                   </DialogContent>
@@ -293,6 +213,5 @@ export function ProjectChecklistsTabs({
           </Card>
         </TabsContent>
       </Tabs>
-    </div>
-  );
+    </div>;
 }

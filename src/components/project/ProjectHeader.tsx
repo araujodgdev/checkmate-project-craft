@@ -1,10 +1,8 @@
-
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { PenSquare, CalendarRange, Download, Trash2, Loader2, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import React from "react";
-
 interface ProjectHeaderProps {
   project: any;
   isEditOpen: boolean;
@@ -13,10 +11,15 @@ interface ProjectHeaderProps {
   handleDeleteProject: () => void;
   navigate: (to: string) => void;
 }
-
-export function ProjectHeader({ project, isEditOpen, setIsEditOpen, isDeletingProject, handleDeleteProject, navigate }: ProjectHeaderProps) {
-  return (
-    <header className="mb-8">
+export function ProjectHeader({
+  project,
+  isEditOpen,
+  setIsEditOpen,
+  isDeletingProject,
+  handleDeleteProject,
+  navigate
+}: ProjectHeaderProps) {
+  return <header className="mb-8">
       <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
@@ -34,15 +37,7 @@ export function ProjectHeader({ project, isEditOpen, setIsEditOpen, isDeletingPr
             <PenSquare size={16} />
             <span className="hidden md:inline">Editar Projeto</span>
           </Button>
-          <Button
-            variant="default"
-            size="sm"
-            className="gap-2 bg-[#1EAEDB] hover:bg-[#33C3F0] text-white"
-            onClick={() => window.open("https://calendly.com/", "_blank")}
-          >
-            <CalendarRange size={16} />
-            <span>Integrar com Calendly</span>
-          </Button>
+          
           <Button variant="outline" size="sm" className="gap-2">
             <Download size={16} />
             <span className="hidden md:inline">Exportar</span>
@@ -64,25 +59,16 @@ export function ProjectHeader({ project, isEditOpen, setIsEditOpen, isDeletingPr
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                <AlertDialogAction 
-                  className="bg-destructive hover:bg-destructive/90"
-                  onClick={handleDeleteProject}
-                  disabled={isDeletingProject}
-                >
-                  {isDeletingProject ? (
-                    <>
+                <AlertDialogAction className="bg-destructive hover:bg-destructive/90" onClick={handleDeleteProject} disabled={isDeletingProject}>
+                  {isDeletingProject ? <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Excluindo...
-                    </>
-                  ) : (
-                    'Excluir Projeto'
-                  )}
+                    </> : 'Excluir Projeto'}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
         </div>
       </div>
-    </header>
-  );
+    </header>;
 }
